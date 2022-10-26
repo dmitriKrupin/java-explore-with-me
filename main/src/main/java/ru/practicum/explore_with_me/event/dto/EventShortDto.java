@@ -3,11 +3,7 @@ package ru.practicum.explore_with_me.event.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.explore_with_me.category.dto.CategoryDto;
-import ru.practicum.explore_with_me.category.model.Category;
 import ru.practicum.explore_with_me.user.dto.UserShortDto;
-import ru.practicum.explore_with_me.user.model.User;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
