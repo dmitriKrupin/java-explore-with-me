@@ -2,12 +2,10 @@ package ru.practicum.explore_with_me.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.event.service.EventService;
+import ru.practicum.explore_with_me.request.dto.AdminUpdateEventRequest;
 
 import java.util.List;
 
@@ -31,4 +29,27 @@ public class AdminEventController {
         return eventService.findAllEventsByParams(
                 users, states, categories, rangeStart, rangeEnd, from, size);
     }
+
+    @PutMapping("/{eventId}")
+    private EventFullDto updateEventById(
+            @PathVariable Long eventId,
+            @RequestBody AdminUpdateEventRequest adminUpdateEventRequest) {
+        log.info("Получаем PUT запрос к эндпойнту /admin/events/{}", eventId);
+        return eventService.updateEventById(eventId, adminUpdateEventRequest);
+    }
+
+    @PatchMapping("/{eventId}/publish")
+    private EventFullDto publishedEvent(
+            @PathVariable Long eventId) {
+        log.info("Получаем PATCH запрос к эндпойнту /admin/events/{}/publish", eventId);
+        return eventService.publishedEvent(eventId);
+    }
+
+    @PatchMapping("/{eventId}/reject")
+    private EventFullDto rejectedEvent(
+            @PathVariable Long eventId) {
+        log.info("Получаем PATCH запрос к эндпойнту /admin/events/{}/reject", eventId);
+        return eventService.rejectedEvent(eventId);
+    }
+
 }

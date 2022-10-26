@@ -11,4 +11,14 @@ public interface CompilationService {
     CompilationDto getCompilationById(Long compId);
 
     CompilationDto addCompilation(NewCompilationDto newCompilationDto);
+
+    void deleteCompilation(Long compId);
+
+    void deleteEventFromCompilation(Long compId, Long eventId);
+
+    void addEventToCompilation(Long compId, Long eventId);
+
+    void unpinCompilationOnMainSize(Long compId);
+
+    void pinCompilationOnMainSize(Long compId);
 }

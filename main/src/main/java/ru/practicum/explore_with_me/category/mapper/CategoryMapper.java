@@ -1,6 +1,7 @@
 package ru.practicum.explore_with_me.category.mapper;
 
 import ru.practicum.explore_with_me.category.dto.CategoryDto;
+import ru.practicum.explore_with_me.category.dto.NewCategoryDto;
 import ru.practicum.explore_with_me.category.model.Category;
 
 import java.util.ArrayList;
@@ -23,5 +24,9 @@ public class CategoryMapper {
         return new Category(
                 categoryDto.getId(),
                 categoryDto.getName());
+    }
+
+    public static Category toNewCategory(NewCategoryDto newCategoryDto) {
+        return new Category(newCategoryDto.getName());
     }
 }

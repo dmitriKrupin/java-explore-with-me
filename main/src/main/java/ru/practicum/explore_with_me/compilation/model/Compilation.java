@@ -16,8 +16,13 @@ public class Compilation {
     private Long id;
     private String title;
     private Boolean pinned;
-    //@ManyToOne
-    //@JoinColumn(name = "event_id")
+    //@ManyToMany(cascade = {CascadeType.ALL})
+    //@JoinTable(
+    //        name = "event_compilations",
+    //        joinColumns = {@JoinColumn(name = "event_id")},
+    //        inverseJoinColumns = {@JoinColumn(name = "compilation_id")}
+    //)
+    //private Set<Event> events = new HashSet<>();
     @ElementCollection
     @CollectionTable(name = "events_list", joinColumns = @JoinColumn(name = "compilation_id"))
     private List<Long> events; //todo: как быть с таблицей events_list? список id событий нужно как-то хранить.

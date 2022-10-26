@@ -20,13 +20,13 @@ public class CategoryController {
 
     @GetMapping
     public List<CategoryDto> getAllCategories() {
-        log.info("Получаем GET запрос к эндпойнту /compilations");
+        log.info("Получаем GET запрос к эндпойнту /categories");
         return categoryService.getAllCategories();
     }
 
     @GetMapping("/{catId}")
     public CategoryDto getCategoryById(@PathVariable Long catId) {
-        log.info("Получаем GET запрос к эндпойнту /compilations");
+        log.info("Получаем GET запрос к эндпойнту /categories/{}", catId);
         return categoryService.getCategoryById(catId);
     }
 }

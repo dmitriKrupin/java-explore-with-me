@@ -27,6 +27,7 @@
     <modules>
         <module>main</module>
         <module>statistics</module>
+        <module>client</module>
     </modules>
 
     <build>

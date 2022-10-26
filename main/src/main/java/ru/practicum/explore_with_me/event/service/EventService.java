@@ -3,6 +3,7 @@ package ru.practicum.explore_with_me.event.service;
 import ru.practicum.explore_with_me.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.event.dto.EventShortDto;
 import ru.practicum.explore_with_me.event.dto.NewEventDto;
+import ru.practicum.explore_with_me.request.dto.AdminUpdateEventRequest;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
 
@@ -31,4 +32,10 @@ public interface EventService {
 
     List<EventFullDto> findAllEventsByParams(List<Long> users, List<String> states, List<Long> categories,
                                              String rangeStart, String rangeEnd, Long from, Long size);
+
+    EventFullDto updateEventById(Long eventId, AdminUpdateEventRequest adminUpdateEventRequest);
+
+    EventFullDto publishedEvent(Long eventId);
+
+    EventFullDto rejectedEvent(Long eventId);
 }
