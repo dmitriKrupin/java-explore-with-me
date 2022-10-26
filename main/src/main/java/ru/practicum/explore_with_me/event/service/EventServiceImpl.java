@@ -197,6 +197,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         event.setState(Status.REJECTED);
         eventRepository.save(event);
-        return EventMapper.toEventFullDto(event);    }
+        return EventMapper.toEventFullDto(event);
+    }
 
 }
