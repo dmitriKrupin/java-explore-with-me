@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class NewCategoryDto {
     //Данные для добавления новой категории
+    //private Long id;
     private String name;
 }

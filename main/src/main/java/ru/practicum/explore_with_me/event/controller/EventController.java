@@ -20,13 +20,13 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    public List<EventShortDto> getAllEvents() {
+    private List<EventShortDto> getAllEvents() {
         log.info("Получаем GET запрос к эндпойнту /events");
         return eventService.getAllEvents();
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEventById(@PathVariable Long id) {
+    private EventFullDto getEventById(@PathVariable Long id) {
         log.info("Получаем GET запрос к эндпойнту /events/{}", id);
         return eventService.getEventById(id);
     }

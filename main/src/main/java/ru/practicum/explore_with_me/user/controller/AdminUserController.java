@@ -16,19 +16,19 @@ public class AdminUserController {
     private UserService userService;
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
+    private List<UserDto> getAllUsers() {
         log.info("Получаем GET запрос к эндпойнту /admin/users");
         return userService.getAllUsers();
     }
 
     @PostMapping
-    public UserDto addUser(@RequestBody UserDto userDto) {
+    private UserDto addUser(@RequestBody UserDto userDto) {
         log.info("Получаем POST запрос к эндпойнту /admin/users");
         return userService.addUser(userDto);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
+    private void deleteUser(@PathVariable Long userId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/users/{}", userId);
         userService.deleteUser(userId);
     }
