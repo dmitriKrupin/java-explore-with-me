@@ -2,7 +2,6 @@ package ru.practicum.explore_with_me.event.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.explore_with_me.category.dto.CategoryDto;
 import ru.practicum.explore_with_me.event.model.Location;
 
 @Data
@@ -10,7 +9,7 @@ import ru.practicum.explore_with_me.event.model.Location;
 public class NewEventDto {
     //Новое событие
     private String annotation;
-    private CategoryDto category;
+    private Long category;
     private String description;
     private String eventDate;
     private Location location;

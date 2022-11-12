@@ -23,8 +23,8 @@ public class AdminEventController {
             @RequestParam List<Long> categories,
             @RequestParam String rangeStart,
             @RequestParam String rangeEnd,
-            @RequestParam Long from,
-            @RequestParam Long size) {
+            @RequestParam(required = false, name = "from", defaultValue = "0") Long from,
+            @RequestParam(required = false, name = "size", defaultValue = "10") Long size) {
         log.info("Получаем GET запрос к эндпойнту /admin/events");
         return eventService.findAllEventsByParams(
                 users, states, categories, rangeStart, rangeEnd, from, size);

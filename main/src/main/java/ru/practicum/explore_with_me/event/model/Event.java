@@ -24,16 +24,21 @@ public class Event {
     @JoinColumn(name = "category_id")
     private Category category;
     private Boolean paid;
+    @Column(name = "event_date")
     private LocalDateTime eventDate;
     @ManyToOne
     @JoinColumn(name = "initiator_id")
     private User initiator;
     private Long views;
+    @Column(name = "confirmed_requests")
     private Long confirmedRequests;
     private String description;
+    @Column(name = "participant_limit")
     private Long participantLimit;
     private Status state;
+    @Column(name = "created_on")
     private LocalDateTime createdOn;
+    @Column(name = "published_on")
     private LocalDateTime publishedOn;
     @ManyToOne
     @JoinColumn(name = "location_id")

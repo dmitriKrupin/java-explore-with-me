@@ -1,6 +1,7 @@
 package ru.practicum.explore_with_me.compilation.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.practicum.explore_with_me.event.model.Event;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "compilations", schema = "public")
+@EqualsAndHashCode
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,11 +22,9 @@ public class Compilation {
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "events_list",
-            joinColumns = {@JoinColumn(name = "event_id")},
+            joinColumns = {@JoinColumn(name = "events_id")},
             inverseJoinColumns = {@JoinColumn(name = "compilation_id")}
     )
-    //@ElementCollection
-    //@CollectionTable(name = "events_list", joinColumns = @JoinColumn(name = "compilation_id"))
     private List<Event> events; //todo: как быть с таблицей events_list? список id событий нужно как-то хранить.
 
     public Compilation(String title, Boolean pinned, List<Event> events) {

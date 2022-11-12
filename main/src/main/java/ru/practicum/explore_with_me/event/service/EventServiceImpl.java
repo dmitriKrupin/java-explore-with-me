@@ -8,8 +8,10 @@ import ru.practicum.explore_with_me.event.dto.EventShortDto;
 import ru.practicum.explore_with_me.event.dto.NewEventDto;
 import ru.practicum.explore_with_me.event.mapper.EventMapper;
 import ru.practicum.explore_with_me.event.model.Event;
+import ru.practicum.explore_with_me.event.model.Location;
 import ru.practicum.explore_with_me.event.model.Status;
 import ru.practicum.explore_with_me.event.repository.EventRepository;
+import ru.practicum.explore_with_me.event.repository.LocationRepository;
 import ru.practicum.explore_with_me.request.dto.AdminUpdateEventRequest;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
@@ -29,12 +31,14 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final LocationRepository locationRepository;
 
-    public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository) {
+    public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, LocationRepository locationRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.requestRepository = requestRepository;
+        this.locationRepository = locationRepository;
     }
 
     @Override
@@ -47,7 +51,9 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + id + " нет"));
-        return EventMapper.toEventFullDto(event);
+        Category category = categoryRepository.findById(event.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Такой категории c id " + id + " нет"));
+        return EventMapper.toEventFullDto(event, category);
     }
 
     @Override
@@ -80,7 +86,7 @@ public class EventServiceImpl implements EventService {
             event.setTitle(updateEventRequest.getTitle());
 
             eventRepository.save(event);
-            return EventMapper.toEventFullDto(event);
+            return EventMapper.toEventFullDto(event, category);
         } else {
             throw new RuntimeException("Пользователь с id " + userId + " не может вносить изменения в это событие.");
         }
@@ -90,9 +96,19 @@ public class EventServiceImpl implements EventService {
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
-        Event event = EventMapper.toNewEvent(newEventDto, user);
+        Category category = categoryRepository.findById(newEventDto.getCategory())
+                .orElseThrow(() -> new RuntimeException("Такой категории c id " + newEventDto.getCategory() + " нет"));
+        addLocation(newEventDto);
+        Event event = EventMapper.toNewEvent(newEventDto, category, user);
         eventRepository.save(event);
-        return EventMapper.toEventFullDto(event);
+        return EventMapper.toEventFullDto(event, category);
+    }
+
+    @Override
+    public Location addLocation(NewEventDto newEventDto) {
+        Location location = newEventDto.getLocation();
+        locationRepository.save(location);
+        return location;
     }
 
     @Override
@@ -101,7 +117,9 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
-        return EventMapper.toEventFullDto(event);
+        Category category = categoryRepository.findById(event.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+        return EventMapper.toEventFullDto(event, category);
     }
 
     @Override
@@ -110,9 +128,11 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+        Category category = categoryRepository.findById(event.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
         if (event.getRequestModeration()) {
             event.setState(Status.CANCELED);
-            return EventMapper.toEventFullDto(event);
+            return EventMapper.toEventFullDto(event, category);
         } else {
             throw new RuntimeException("Событие с id " + eventId + " не может быть отменено, т.к. прошло модерацию.");
         }
@@ -153,10 +173,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> findAllEventsByParams(List<Long> users, List<String> states, List<Long> categories,
-                                                    String rangeStart, String rangeEnd, Long from, Long size) {
+    public List<EventFullDto> findAllEventsByParams(
+            List<Long> users, List<String> states, List<Long> categories,
+            String rangeStart, String rangeEnd, Long from, Long size) {
         //todo: Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия
-        return null;
+        // добавить остальные условия для поиска: пользователи, статус и т.д.
+        List<Event> events = eventRepository.findAllByCategoryIdIn(categories);
+        return EventMapper.toEventFullDtoList(events);
     }
 
     @Override
@@ -168,7 +191,7 @@ public class EventServiceImpl implements EventService {
         Long categoryId = adminUpdateEventRequest.getCategory();
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + categoryId + " нет"));
-        event.setCategory(category);
+        event.setCategory(event.getCategory());
 
         event.setDescription(adminUpdateEventRequest.getDescription());
         event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate()));
@@ -179,7 +202,7 @@ public class EventServiceImpl implements EventService {
         event.setTitle(adminUpdateEventRequest.getTitle());
 
         eventRepository.save(event);
-        return EventMapper.toEventFullDto(event);
+        return EventMapper.toEventFullDto(event, category);
     }
 
     @Override
@@ -188,7 +211,9 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         event.setState(Status.PUBLISHED);
         eventRepository.save(event);
-        return EventMapper.toEventFullDto(event);
+        Category category = categoryRepository.findById(event.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+        return EventMapper.toEventFullDto(event, category);
     }
 
     @Override
@@ -197,7 +222,9 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         event.setState(Status.REJECTED);
         eventRepository.save(event);
-        return EventMapper.toEventFullDto(event);
+        Category category = categoryRepository.findById(event.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+        return EventMapper.toEventFullDto(event, category);
     }
 
 }

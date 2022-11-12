@@ -3,6 +3,7 @@ package ru.practicum.explore_with_me.event.service;
 import ru.practicum.explore_with_me.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.event.dto.EventShortDto;
 import ru.practicum.explore_with_me.event.dto.NewEventDto;
+import ru.practicum.explore_with_me.event.model.Location;
 import ru.practicum.explore_with_me.request.dto.AdminUpdateEventRequest;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
@@ -20,6 +21,8 @@ public interface EventService {
 
     EventFullDto addEvent(Long userId, NewEventDto newEventDto);
 
+    Location addLocation(NewEventDto newEventDto);
+
     EventFullDto getEventByUser(Long userId, Long eventId);
 
     EventFullDto cancelEventByUser(Long userId, Long eventId);
@@ -30,8 +33,9 @@ public interface EventService {
 
     ParticipationRequestDto rejectedRequestByUser(Long userId, Long eventId, Long reqId);
 
-    List<EventFullDto> findAllEventsByParams(List<Long> users, List<String> states, List<Long> categories,
-                                             String rangeStart, String rangeEnd, Long from, Long size);
+    List<EventFullDto> findAllEventsByParams(
+            List<Long> users, List<String> states, List<Long> categories,
+            String rangeStart, String rangeEnd, Long from, Long size);
 
     EventFullDto updateEventById(Long eventId, AdminUpdateEventRequest adminUpdateEventRequest);
 

@@ -8,9 +8,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "locations", schema = "public")
 public class Location {
-    @Id //todo: переделать на уникальность по lat и lon
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Double lat;
-    private Double lon;
+    private Float lat;
+    private Float lon;
 }

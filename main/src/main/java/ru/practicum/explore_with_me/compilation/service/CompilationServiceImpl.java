@@ -7,16 +7,21 @@ import ru.practicum.explore_with_me.compilation.dto.NewCompilationDto;
 import ru.practicum.explore_with_me.compilation.mapper.CompilationMapper;
 import ru.practicum.explore_with_me.compilation.model.Compilation;
 import ru.practicum.explore_with_me.compilation.repository.CompilationRepository;
+import ru.practicum.explore_with_me.event.mapper.EventMapper;
+import ru.practicum.explore_with_me.event.model.Event;
+import ru.practicum.explore_with_me.event.repository.EventRepository;
 
 import java.util.List;
 
 @Service
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    public CompilationServiceImpl(CompilationRepository compilationRepository) {
+    public CompilationServiceImpl(CompilationRepository compilationRepository, EventRepository eventRepository) {
         this.compilationRepository = compilationRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -29,14 +34,17 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getCompilationById(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + compId + " нет"));
-        return CompilationMapper.toCompilationDto(compilation);
+        return CompilationMapper.toCompilationDto(
+                compilation, EventMapper.toEventShortDtoList(compilation.getEvents()));
     }
 
     @Override
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
-        Compilation compilation = CompilationMapper.toCompilation(newCompilationDto);
+        List<Event> events = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
+        Compilation compilation = CompilationMapper.toCompilation(newCompilationDto, events);
         compilationRepository.save(compilation);
-        return CompilationMapper.toCompilationDto(compilation);
+        return CompilationMapper.toCompilationDto(
+                compilation, EventMapper.toEventShortDtoList(compilation.getEvents()));
     }
 
     @Override

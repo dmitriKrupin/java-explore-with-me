@@ -20,7 +20,8 @@ public class PrivateEventController {
     private EventService eventService;
 
     @GetMapping
-    private List<EventShortDto> getAllEventsByUser(@PathVariable Long userId) {
+    private List<EventShortDto> getAllEventsByUser(
+            @PathVariable Long userId) {
         log.info("Получаем GET запрос к эндпойнту /users/{}/events", userId);
         return eventService.getAllEventsByUser(userId);
     }

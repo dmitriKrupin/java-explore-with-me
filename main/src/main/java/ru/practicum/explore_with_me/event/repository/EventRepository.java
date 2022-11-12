@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByInitiator(User user);
+    List<Event> findAllByIdIn(List<Long> events);
+    List<Event> findAllByCategoryIdIn(List<Long> caregories);
 }

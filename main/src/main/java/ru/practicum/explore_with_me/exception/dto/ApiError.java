@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ApiError {
     //Сведения об ошибке
-    private List<Exception> errors;
+    private List<String> errors;
     //todo: example: List [] Список стектрейсов или описания ошибок
     // string example: [] Список стектрейсов или описания ошибок
     private String message;
