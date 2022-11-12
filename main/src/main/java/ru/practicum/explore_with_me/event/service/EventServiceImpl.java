@@ -178,6 +178,7 @@ public class EventServiceImpl implements EventService {
             String rangeStart, String rangeEnd, Long from, Long size) {
         //todo: Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия
         // добавить остальные условия для поиска: пользователи, статус и т.д.
+
         List<Event> events = eventRepository.findAllByCategoryIdIn(categories);
         return EventMapper.toEventFullDtoList(events);
     }
