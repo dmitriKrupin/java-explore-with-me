@@ -22,6 +22,7 @@ import ru.practicum.explore_with_me.user.model.User;
 import ru.practicum.explore_with_me.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,7 +81,8 @@ public class EventServiceImpl implements EventService {
             event.setCategory(category);
 
             event.setDescription(updateEventRequest.getDescription());
-            event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate()));
+            event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             event.setPaid(updateEventRequest.getPaid());
             event.setParticipantLimit(updateEventRequest.getParticipantLimit());
             event.setTitle(updateEventRequest.getTitle());
@@ -126,7 +128,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto cancelEventByUser(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
-        Event event = eventRepository.findById(userId)
+        Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
@@ -142,7 +144,7 @@ public class EventServiceImpl implements EventService {
     public List<ParticipationRequestDto> getRequestsByUser(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
-        Event event = eventRepository.findById(userId)
+        Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         List<Request> requests = requestRepository.findAllByEventId(eventId);
         return RequestMapper.toParticipationRequestDtoList(requests);
@@ -152,11 +154,11 @@ public class EventServiceImpl implements EventService {
     public ParticipationRequestDto confirmedRequestByUser(Long userId, Long eventId, Long reqId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
-        Event event = eventRepository.findById(userId)
+        Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         Request request = requestRepository.findById(reqId)
                 .orElseThrow(() -> new RuntimeException("Такой заявки c id " + reqId + " нет"));
-        request.setStatus(String.valueOf(Status.CONFIRMED));
+        request.setStatus(Status.CONFIRMED);
         return RequestMapper.toParticipationRequestDto(request);
     }
 
@@ -168,7 +170,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         Request request = requestRepository.findById(reqId)
                 .orElseThrow(() -> new RuntimeException("Такой заявки c id " + reqId + " нет"));
-        request.setStatus(String.valueOf(Status.PENDING));
+        request.setStatus(Status.PENDING);
         return RequestMapper.toParticipationRequestDto(request);
     }
 
@@ -178,7 +180,6 @@ public class EventServiceImpl implements EventService {
             String rangeStart, String rangeEnd, Long from, Long size) {
         //todo: Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия
         // добавить остальные условия для поиска: пользователи, статус и т.д.
-
         List<Event> events = eventRepository.findAllByCategoryIdIn(categories);
         return EventMapper.toEventFullDtoList(events);
     }
@@ -195,7 +196,8 @@ public class EventServiceImpl implements EventService {
         event.setCategory(event.getCategory());
 
         event.setDescription(adminUpdateEventRequest.getDescription());
-        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate()));
+        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         event.setLocation(adminUpdateEventRequest.getLocation());
         event.setPaid(adminUpdateEventRequest.getPaid());
         event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());

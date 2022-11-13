@@ -9,11 +9,11 @@ import java.util.List;
 public class RequestMapper {
     public static ParticipationRequestDto toParticipationRequestDto(Request request) {
         return new ParticipationRequestDto(
-                request.getCreated(),
-                request.getEventId(),
+                String.valueOf(request.getCreated()),
+                request.getEvent().getId(),
                 request.getId(),
-                request.getRequester(),
-                request.getStatus());
+                request.getRequester().getId(),
+                String.valueOf(request.getStatus()));
     }
 
     public static List<ParticipationRequestDto> toParticipationRequestDtoList(List<Request> requests) {
