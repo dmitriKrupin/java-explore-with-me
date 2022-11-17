@@ -2,6 +2,7 @@ package ru.practicum.explore_with_me.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore_with_me.exception.NotFoundException;
 import ru.practicum.explore_with_me.user.dto.UserDto;
 import ru.practicum.explore_with_me.user.mapper.UserMapper;
 import ru.practicum.explore_with_me.user.model.User;
@@ -34,7 +35,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         userRepository.delete(user);
     }
+
 }

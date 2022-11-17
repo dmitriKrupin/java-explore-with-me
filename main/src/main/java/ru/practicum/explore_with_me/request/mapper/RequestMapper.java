@@ -3,13 +3,15 @@ package ru.practicum.explore_with_me.request.mapper;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.model.Request;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RequestMapper {
     public static ParticipationRequestDto toParticipationRequestDto(Request request) {
         return new ParticipationRequestDto(
-                String.valueOf(request.getCreated()),
+                request.getCreated().format(
+                        DateTimeFormatter.BASIC_ISO_DATE),
                 request.getEvent().getId(),
                 request.getId(),
                 request.getRequester().getId(),

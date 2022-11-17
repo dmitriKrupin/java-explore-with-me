@@ -43,9 +43,11 @@ public class EventMapper {
                 event.getAnnotation(),
                 CategoryMapper.toCategoryDto(category),
                 event.getConfirmedRequests(),
-                String.valueOf(event.getCreatedOn()),
+                event.getCreatedOn().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
                 event.getDescription(),
-                String.valueOf(event.getEventDate()),
+                event.getEventDate().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
                 event.getId(),
                 UserMapper.toUserShortDto(event.getInitiator()),
                 event.getLocation(),
@@ -82,7 +84,8 @@ public class EventMapper {
                 newEventDto.getDescription(),
                 newEventDto.getParticipantLimit(),
                 null,
-                LocalDateTime.now(),
+                LocalDateTime.parse(newEventDto.getEventDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 null,
                 newEventDto.getLocation(),
                 newEventDto.getRequestModeration());

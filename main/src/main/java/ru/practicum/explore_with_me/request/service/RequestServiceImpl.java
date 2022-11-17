@@ -46,6 +46,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         Request request = new Request(event, user, LocalDateTime.now(), event.getState());
+        request.setStatus(Status.PENDING);
         requestRepository.save(request);
         return RequestMapper.toParticipationRequestDto(request);
     }
@@ -56,7 +57,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Такой заявки c id " + requestId + " нет"));
-        request.setStatus(Status.FORBIDDEN);
+        request.setStatus(Status.CANCELED);
         requestRepository.save(request);
         return RequestMapper.toParticipationRequestDto(request);
     }

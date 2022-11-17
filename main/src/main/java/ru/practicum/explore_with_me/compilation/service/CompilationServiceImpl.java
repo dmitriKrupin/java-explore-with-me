@@ -10,6 +10,7 @@ import ru.practicum.explore_with_me.compilation.repository.CompilationRepository
 import ru.practicum.explore_with_me.event.mapper.EventMapper;
 import ru.practicum.explore_with_me.event.model.Event;
 import ru.practicum.explore_with_me.event.repository.EventRepository;
+import ru.practicum.explore_with_me.exception.NotFoundException;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto getCompilationById(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + compId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + compId + " нет"));
         return CompilationMapper.toCompilationDto(
                 compilation, EventMapper.toEventShortDtoList(compilation.getEvents()));
     }
@@ -57,15 +58,25 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void deleteEventFromCompilation(Long compId, Long eventId) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + compId + " нет"));
-        //todo: Удалить событие из подборки
+                .orElseThrow(() -> new NotFoundException("Такой подборки c id " + compId + " нет"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
+        List<Event> events = compilation.getEvents();
+        events.remove(event);
+        compilation.setEvents(events);
+        compilationRepository.save(compilation);
     }
 
     @Override
     public void addEventToCompilation(Long compId, Long eventId) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + compId + " нет"));
-        //todo: Добавить событие в подборку
+                .orElseThrow(() -> new NotFoundException("Такой подборки c id " + compId + " нет"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
+        List<Event> events = compilation.getEvents();
+        events.add(event);
+        compilation.setEvents(events);
+        compilationRepository.save(compilation);
     }
 
     @Override

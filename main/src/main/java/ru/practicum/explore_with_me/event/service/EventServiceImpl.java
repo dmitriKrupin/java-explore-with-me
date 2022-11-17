@@ -12,6 +12,7 @@ import ru.practicum.explore_with_me.event.model.Location;
 import ru.practicum.explore_with_me.event.model.Status;
 import ru.practicum.explore_with_me.event.repository.EventRepository;
 import ru.practicum.explore_with_me.event.repository.LocationRepository;
+import ru.practicum.explore_with_me.exception.NotFoundException;
 import ru.practicum.explore_with_me.request.dto.AdminUpdateEventRequest;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
@@ -51,7 +52,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getEventById(Long id) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + id + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + id + " нет"));
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + id + " нет"));
         return EventMapper.toEventFullDto(event, category);
@@ -102,6 +103,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + newEventDto.getCategory() + " нет"));
         addLocation(newEventDto);
         Event event = EventMapper.toNewEvent(newEventDto, category, user);
+        event.setState(Status.PENDING);
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, category);
     }
@@ -170,7 +172,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         Request request = requestRepository.findById(reqId)
                 .orElseThrow(() -> new RuntimeException("Такой заявки c id " + reqId + " нет"));
-        request.setStatus(Status.PENDING);
+        request.setStatus(Status.REJECTED);
         return RequestMapper.toParticipationRequestDto(request);
     }
 
@@ -223,7 +225,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto rejectedEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
-        event.setState(Status.REJECTED);
+        event.setState(Status.CANCELED);
         eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));

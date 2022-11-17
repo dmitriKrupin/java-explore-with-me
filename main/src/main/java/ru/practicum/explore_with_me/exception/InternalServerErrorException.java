@@ -1,9 +1,9 @@
 package ru.practicum.explore_with_me.exception;
 
-public class UnsupportedException extends RuntimeException {
+public class InternalServerErrorException extends RuntimeException {
     private final String error;
 
-    public UnsupportedException(String error) {
+    public InternalServerErrorException(String error) {
         this.error = error;
     }
 

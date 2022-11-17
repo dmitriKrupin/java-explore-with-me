@@ -6,6 +6,8 @@ import ru.practicum.explore_with_me.category.dto.NewCategoryDto;
 import ru.practicum.explore_with_me.category.mapper.CategoryMapper;
 import ru.practicum.explore_with_me.category.model.Category;
 import ru.practicum.explore_with_me.category.repository.CategoryRepository;
+import ru.practicum.explore_with_me.exception.NotFoundException;
+import ru.practicum.explore_with_me.exception.controller.ExceptionController;
 
 import java.util.List;
 
@@ -13,9 +15,11 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ExceptionController exceptionController;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ExceptionController exceptionController) {
         this.categoryRepository = categoryRepository;
+        this.exceptionController = exceptionController;
     }
 
     @Override
@@ -27,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getCategoryById(Long catId) {
         Category category = categoryRepository.findById(catId)
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + catId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой категории c id " + catId + " нет"));
         return CategoryMapper.toCategoryDto(category);
     }
 
