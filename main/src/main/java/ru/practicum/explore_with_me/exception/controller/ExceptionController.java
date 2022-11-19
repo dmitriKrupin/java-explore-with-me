@@ -48,10 +48,18 @@ public class ExceptionController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT) //409
-    public ConflictException conflictException(final ConflictException e) {
-        return new ConflictException(
-                String.format("Ошибка с полем \"%s\".", e.getParameter())
-        );
+    public ResponseEntity<ApiError> conflictException(final ConflictException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                //    private List<String> errors;
+                //    //todo: example: List [] Список стектрейсов или описания ошибок
+                //    // string example: [] Список стектрейсов или описания ошибок
+                //    private String message;
+                //    private String reason;
+                //    private String status;
+                //    //todo: example: FORBIDDEN Код статуса HTTP-ответа Enum: Array [ 68 ]
+                //    private String timestamp;
+                .body(new ApiError(List.of(e.toString())));
     }
 
     @ExceptionHandler

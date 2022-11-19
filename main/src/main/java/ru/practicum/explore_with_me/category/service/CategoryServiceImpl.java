@@ -6,8 +6,8 @@ import ru.practicum.explore_with_me.category.dto.NewCategoryDto;
 import ru.practicum.explore_with_me.category.mapper.CategoryMapper;
 import ru.practicum.explore_with_me.category.model.Category;
 import ru.practicum.explore_with_me.category.repository.CategoryRepository;
+import ru.practicum.explore_with_me.exception.ConflictException;
 import ru.practicum.explore_with_me.exception.NotFoundException;
-import ru.practicum.explore_with_me.exception.controller.ExceptionController;
 
 import java.util.List;
 
@@ -15,11 +15,9 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final ExceptionController exceptionController;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, ExceptionController exceptionController) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
-        this.exceptionController = exceptionController;
     }
 
     @Override
@@ -37,9 +35,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto) {
-        Long catId = categoryDto.getId();
-        Category category = categoryRepository.findById(catId)
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + catId + " нет"));
+        Category category = new Category();
+        List<Category> categories = categoryRepository.findAll();
+        for (Category entry : categories) {
+            if (entry.getName().equals(categoryDto.getName())) {
+                throw new ConflictException("Категория с таким именем "
+                        + categoryDto.getName() + " уже есть в базе!");
+            }
+        }
         category.setName(categoryDto.getName());
         categoryRepository.save(category);
         return CategoryMapper.toCategoryDto(category);
@@ -48,6 +51,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.toNewCategory(newCategoryDto);
+        List<Category> categories = categoryRepository.findAll();
+        for (Category entry : categories) {
+            if (entry.getName().equals(newCategoryDto.getName())) {
+                throw new ConflictException("Категория с таким именем " +
+                        newCategoryDto.getName() + " уже есть в базе!");
+            }
+        }
         categoryRepository.save(category);
         return CategoryMapper.toCategoryDto(category);
     }

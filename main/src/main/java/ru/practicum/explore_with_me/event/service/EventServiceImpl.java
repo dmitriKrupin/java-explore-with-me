@@ -24,6 +24,7 @@ import ru.practicum.explore_with_me.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,8 +45,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getAllEvents() {
-        List<Event> events = eventRepository.findAll();
+    public List<EventShortDto> getAllEvents(
+            String text, String categories, Boolean paid, String rangeStart,
+            String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size) {
+        List<Event> events = eventRepository.findAllByAnnotationLikeAndCategoryIdAndPaid(
+                text, Long.parseLong(categories), paid);
         return EventMapper.toEventShortDtoList(events);
     }
 
@@ -118,36 +122,36 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getEventByUser(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
-        Event event = eventRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Category category = categoryRepository.findById(event.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         return EventMapper.toEventFullDto(event, category);
     }
 
     @Override
     public EventFullDto cancelEventByUser(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Category category = categoryRepository.findById(event.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         if (event.getRequestModeration()) {
             event.setState(Status.CANCELED);
             return EventMapper.toEventFullDto(event, category);
         } else {
-            throw new RuntimeException("Событие с id " + eventId + " не может быть отменено, т.к. прошло модерацию.");
+            throw new NotFoundException("Событие с id " + eventId + " не может быть отменено, т.к. прошло модерацию.");
         }
     }
 
     @Override
     public List<ParticipationRequestDto> getRequestsByUser(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         List<Request> requests = requestRepository.findAllByEventId(eventId);
         return RequestMapper.toParticipationRequestDtoList(requests);
     }
@@ -155,11 +159,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public ParticipationRequestDto confirmedRequestByUser(Long userId, Long eventId, Long reqId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Request request = requestRepository.findById(reqId)
-                .orElseThrow(() -> new RuntimeException("Такой заявки c id " + reqId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой заявки c id " + reqId + " нет"));
         request.setStatus(Status.CONFIRMED);
         return RequestMapper.toParticipationRequestDto(request);
     }
@@ -167,11 +171,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public ParticipationRequestDto rejectedRequestByUser(Long userId, Long eventId, Long reqId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Request request = requestRepository.findById(reqId)
-                .orElseThrow(() -> new RuntimeException("Такой заявки c id " + reqId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой заявки c id " + reqId + " нет"));
         request.setStatus(Status.REJECTED);
         return RequestMapper.toParticipationRequestDto(request);
     }
@@ -180,21 +184,34 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> findAllEventsByParams(
             List<Long> users, List<String> states, List<Long> categories,
             String rangeStart, String rangeEnd, Long from, Long size) {
-        //todo: Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия
-        // добавить остальные условия для поиска: пользователи, статус и т.д.
-        List<Event> events = eventRepository.findAllByCategoryIdIn(categories);
+        List<Status> statusList = getStatusFromString(states);
+        LocalDateTime start = LocalDateTime.parse(rangeStart,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime end = LocalDateTime.parse(rangeEnd,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        List<Event> events = eventRepository
+                .findAllByInitiator_IdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
+                        users, statusList, categories, start, end);
         return EventMapper.toEventFullDtoList(events);
+    }
+
+    private List<Status> getStatusFromString(List<String> state) {
+        List<Status> statusList = new ArrayList<>();
+        for (String entry : state) {
+            statusList.add(Status.valueOf(entry));
+        }
+        return statusList;
     }
 
     @Override
     public EventFullDto updateEventById(Long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         event.setAnnotation(adminUpdateEventRequest.getAnnotation());
 
         Long categoryId = adminUpdateEventRequest.getCategory();
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + categoryId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой категории c id " + categoryId + " нет"));
         event.setCategory(event.getCategory());
 
         event.setDescription(adminUpdateEventRequest.getDescription());
@@ -213,11 +230,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto publishedEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         event.setState(Status.PUBLISHED);
         eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         return EventMapper.toEventFullDto(event, category);
     }
 
@@ -228,7 +245,7 @@ public class EventServiceImpl implements EventService {
         event.setState(Status.CANCELED);
         eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Такой категории c id " + event.getCategory() + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         return EventMapper.toEventFullDto(event, category);
     }
 

@@ -18,11 +18,14 @@ public class AdminEventController {
 
     @GetMapping
     private List<EventFullDto> findAllEventsByParams(
-            @RequestParam List<Long> users,
-            @RequestParam List<String> states,
-            @RequestParam List<Long> categories,
-            @RequestParam String rangeStart,
-            @RequestParam String rangeEnd,
+            @RequestParam(required = false, name = "users") List<Long> users,
+            @RequestParam(required = false, name = "states",
+                    defaultValue = "PUBLISHED") List<String> states,
+            @RequestParam(required = false, name = "categories") List<Long> categories,
+            @RequestParam(required = false, name = "rangeStart",
+                    defaultValue = "0001-01-01 00:00:00") String rangeStart,
+            @RequestParam(required = false, name = "rangeEnd",
+                    defaultValue = "4000-01-01 00:00:00") String rangeEnd,
             @RequestParam(required = false, name = "from", defaultValue = "0") Long from,
             @RequestParam(required = false, name = "size", defaultValue = "10") Long size) {
         log.info("Получаем GET запрос к эндпойнту /admin/events");

@@ -20,7 +20,8 @@ public class EventMapper {
                 event.getAnnotation(),
                 CategoryMapper.toCategoryDto(category),
                 event.getConfirmedRequests(),
-                String.valueOf(event.getEventDate()),
+                event.getEventDate().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
                 event.getId(),
                 UserMapper.toUserShortDto(event.getInitiator()),
                 event.getPaid(),

@@ -2,10 +2,7 @@ package ru.practicum.explore_with_me.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore_with_me.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.event.dto.EventShortDto;
 import ru.practicum.explore_with_me.event.service.EventService;
@@ -20,9 +17,19 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    private List<EventShortDto> getAllEvents() {
+    private List<EventShortDto> getAllEvents(
+            @RequestParam(required = false, name = "text") String text,
+            @RequestParam(required = false, name = "categories") String categories,
+            @RequestParam(required = false, name = "paid") Boolean paid,
+            @RequestParam(required = false, name = "rangeStart") String rangeStart,
+            @RequestParam(required = false, name = "rangeEnd") String rangeEnd,
+            @RequestParam(required = false, name = "onlyAvailable") Boolean onlyAvailable,
+            @RequestParam(required = false, name = "sort") String sort,
+            @RequestParam(required = false, name = "from", defaultValue = "0") Long from,
+            @RequestParam(required = false, name = "size", defaultValue = "10") Long size) {
         log.info("Получаем GET запрос к эндпойнту /events");
-        return eventService.getAllEvents();
+        return eventService.getAllEvents(text, categories, paid, rangeStart,
+                rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/{id}")

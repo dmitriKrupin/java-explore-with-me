@@ -25,7 +25,7 @@ public class Compilation {
             joinColumns = {@JoinColumn(name = "events_id")},
             inverseJoinColumns = {@JoinColumn(name = "compilation_id")}
     )
-    private List<Event> events; //todo: как быть с таблицей events_list? список id событий нужно как-то хранить.
+    private List<Event> events;
 
     public Compilation(String title, Boolean pinned, List<Event> events) {
         this.title = title;

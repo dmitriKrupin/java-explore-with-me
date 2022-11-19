@@ -11,7 +11,9 @@ import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
 import java.util.List;
 
 public interface EventService {
-    List<EventShortDto> getAllEvents();
+    List<EventShortDto> getAllEvents(
+            String text, String categories, Boolean paid, String rangeStart,
+            String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size);
 
     EventFullDto getEventById(Long id);
 
