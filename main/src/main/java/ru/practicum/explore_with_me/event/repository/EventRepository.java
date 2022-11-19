@@ -15,7 +15,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByIdIn(List<Long> events);
 
     List<Event> findAllByAnnotationLikeAndCategoryIdAndPaid(
-            String annotation, Long category_id, Boolean paid);
+            String annotation, Long category, Boolean paid);
 
     List<Event> findAllByInitiator_IdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
             Collection<Long> users, Collection<Status> states,
