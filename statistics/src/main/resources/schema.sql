@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS stats
     uri       VARCHAR                                 NOT NULL,
     ip        VARCHAR                                 NOT NULL,
     timestamp TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
-    hits      BIGINT                                  NOT NULL
+    hits      BIGINT
 );

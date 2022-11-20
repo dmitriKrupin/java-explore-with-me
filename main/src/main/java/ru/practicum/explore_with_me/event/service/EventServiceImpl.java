@@ -107,6 +107,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + newEventDto.getCategory() + " нет"));
         addLocation(newEventDto);
         Event event = EventMapper.toNewEvent(newEventDto, category, user);
+
         event.setState(Status.PENDING);
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, category);
@@ -138,7 +139,9 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
-        if (event.getRequestModeration()) {
+        //todo: Обратите внимание:
+        // Отменить можно только событие в состоянии ожидания модерации.
+        if (event.getState().equals(Status.PENDING)) {
             event.setState(Status.CANCELED);
             return EventMapper.toEventFullDto(event, category);
         } else {
@@ -158,6 +161,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public ParticipationRequestDto confirmedRequestByUser(Long userId, Long eventId, Long reqId) {
+        //todo: Обратите внимание:
+        // если для события лимит заявок равен 0 или отключена пре-модерация заявок,
+        // то подтверждение заявок не требуется
+        // нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие
+        // если при подтверждении данной заявки, лимит заявок для события исчерпан,
+        // то все неподтверждённые заявки необходимо отклонить
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)

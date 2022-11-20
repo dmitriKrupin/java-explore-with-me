@@ -41,6 +41,13 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto addRequestByUserInAnotherEvent(Long userId, Long eventId) {
+        //todo: Обратите внимание:
+        // нельзя добавить повторный запрос
+        // инициатор события не может добавить запрос на участие в своём событии
+        // нельзя участвовать в неопубликованном событии
+        // если у события достигнут лимит запросов на участие - необходимо вернуть ошибку
+        // если для события отключена пре-модерация запросов на участие,
+        // то запрос должен автоматически перейти в состояние подтвержденного
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
