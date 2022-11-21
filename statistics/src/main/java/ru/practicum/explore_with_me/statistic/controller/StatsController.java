@@ -1,11 +1,11 @@
-package ru.practicum.explore_with_me.controller;
+package ru.practicum.explore_with_me.statistic.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore_with_me.dto.EndpointHit;
-import ru.practicum.explore_with_me.dto.ViewStats;
-import ru.practicum.explore_with_me.service.StatService;
+import ru.practicum.explore_with_me.statistic.dto.EndpointHit;
+import ru.practicum.explore_with_me.statistic.dto.ViewStats;
+import ru.practicum.explore_with_me.statistic.service.StatService;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package ru.practicum.explore_with_me.service;
+package ru.practicum.explore_with_me.statistic.service;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.explore_with_me.dto.EndpointHit;
-import ru.practicum.explore_with_me.dto.ViewStats;
-import ru.practicum.explore_with_me.mapper.StatsMapper;
-import ru.practicum.explore_with_me.model.Stats;
-import ru.practicum.explore_with_me.repository.StatRepository;
+import ru.practicum.explore_with_me.statistic.dto.EndpointHit;
+import ru.practicum.explore_with_me.statistic.dto.ViewStats;
+import ru.practicum.explore_with_me.statistic.mapper.StatsMapper;
+import ru.practicum.explore_with_me.statistic.model.Stats;
+import ru.practicum.explore_with_me.statistic.repository.StatRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

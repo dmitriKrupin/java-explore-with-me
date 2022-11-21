@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.explore_with_me.event.model.Event;
 import ru.practicum.explore_with_me.event.model.Status;
 import ru.practicum.explore_with_me.event.repository.EventRepository;
+import ru.practicum.explore_with_me.exception.NotFoundException;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.mapper.RequestMapper;
 import ru.practicum.explore_with_me.request.model.Request;
@@ -49,9 +50,9 @@ public class RequestServiceImpl implements RequestService {
         // если для события отключена пре-модерация запросов на участие,
         // то запрос должен автоматически перейти в состояние подтвержденного
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Request request = new Request(event, user, LocalDateTime.now(), event.getState());
         request.setStatus(Status.PENDING);
         requestRepository.save(request);
@@ -61,9 +62,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto canceledOwnRequestByUser(Long userId, Long requestId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Такой заявки c id " + requestId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такой заявки c id " + requestId + " нет"));
         request.setStatus(Status.CANCELED);
         requestRepository.save(request);
         return RequestMapper.toParticipationRequestDto(request);

@@ -1,8 +1,8 @@
-package ru.practicum.explore_with_me.mapper;
+package ru.practicum.explore_with_me.statistic.mapper;
 
-import ru.practicum.explore_with_me.dto.EndpointHit;
-import ru.practicum.explore_with_me.dto.ViewStats;
-import ru.practicum.explore_with_me.model.Stats;
+import ru.practicum.explore_with_me.statistic.dto.EndpointHit;
+import ru.practicum.explore_with_me.statistic.dto.ViewStats;
+import ru.practicum.explore_with_me.statistic.model.Stats;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

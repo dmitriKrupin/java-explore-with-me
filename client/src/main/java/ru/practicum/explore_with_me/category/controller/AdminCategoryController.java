@@ -1,37 +1,42 @@
 package ru.practicum.explore_with_me.category.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explore_with_me.category.client.AdminCategoryClient;
 import ru.practicum.explore_with_me.category.dto.CategoryDto;
 import ru.practicum.explore_with_me.category.dto.NewCategoryDto;
-import ru.practicum.explore_with_me.category.service.CategoryService;
 
 import javax.validation.constraints.PositiveOrZero;
 
+@Controller
 @Slf4j
 @RequestMapping(path = "/admin/categories")
-
+@RequiredArgsConstructor
 public class AdminCategoryController {
-    @Autowired
-    private CategoryService categoryService;
+    private final AdminCategoryClient adminCategoryClient;
 
     @PatchMapping
-    private CategoryDto updateCategory(@Validated @RequestBody CategoryDto categoryDto) {
+    private ResponseEntity<Object> updateCategory(
+            @Validated @RequestBody CategoryDto categoryDto) {
         log.info("Получаем PATCH запрос к эндпойнту /admin/categories");
-        return categoryService.updateCategory(categoryDto);
+        return adminCategoryClient.updateCategory(categoryDto);
     }
 
     @PostMapping
-    private CategoryDto addCategory(@Validated @RequestBody NewCategoryDto newCategoryDto) {
+    private ResponseEntity<Object> addCategory(
+            @Validated @RequestBody NewCategoryDto newCategoryDto) {
         log.info("Получаем POST запрос к эндпойнту /admin/categories");
-        return categoryService.addCategory(newCategoryDto);
+        return adminCategoryClient.addCategory(newCategoryDto);
     }
 
     @DeleteMapping("/{catId}")
-    private void deleteCategory(@Validated @PositiveOrZero @PathVariable Long catId) {
+    private ResponseEntity<Object> deleteCategory(
+            @Validated @PositiveOrZero @PathVariable Long catId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/categories/{}", catId);
-        categoryService.deleteCategory(catId);
+        return adminCategoryClient.deleteCategory(catId);
     }
 }

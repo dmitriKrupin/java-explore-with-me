@@ -24,7 +24,7 @@ public class ExceptionController {
                 .body(new ApiError(
                         List.of(e.toString()),
                         e.getParameter(),
-                        "Only pending or canceled events can be changed",
+                        "For the requested operation the conditions are not met.",
                         "BAD_REQUEST",
                         LocalDateTime.now().format(DateTimeFormatter
                                 .ofPattern("yyyy-MM-dd HH:mm:ss"))));
@@ -38,7 +38,7 @@ public class ExceptionController {
                 .body(new ApiError(
                         List.of(e.toString()),
                         e.getParameter(),
-                        "For the requested operation the conditions are not met.", //e.getCause().toString(),
+                        "For the requested operation the conditions are not met.",
                         "FORBIDDEN",
                         LocalDateTime.now().format(DateTimeFormatter
                                 .ofPattern("yyyy-MM-dd HH:mm:ss"))));
@@ -66,8 +66,8 @@ public class ExceptionController {
                 .body(new ApiError(
                         List.of(e.toString()),
                         e.getParameter(),
-                        "Integrity constraint has been violated",
-                        "String status",
+                        "Integrity constraint has been violated.",
+                        "CONFLICT",
                         LocalDateTime.now().format(DateTimeFormatter
                                 .ofPattern("yyyy-MM-dd HH:mm:ss"))));
     }
@@ -80,7 +80,7 @@ public class ExceptionController {
                 .body(new ApiError(
                         List.of(e.toString()),
                         e.getError(),
-                        "Error occurred",
+                        "Error occurred.",
                         "INTERNAL_SERVER_ERROR",
                         LocalDateTime.now().format(DateTimeFormatter
                                 .ofPattern("yyyy-MM-dd HH:mm:ss"))));

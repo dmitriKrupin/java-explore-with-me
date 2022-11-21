@@ -1,4 +1,4 @@
-package ru.practicum.explore_with_me.dto;
+package ru.practicum.explore_with_me.statistic.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
