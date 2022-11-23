@@ -11,7 +11,7 @@ public class RequestMapper {
     public static ParticipationRequestDto toParticipationRequestDto(Request request) {
         return new ParticipationRequestDto(
                 request.getCreated().format(
-                        DateTimeFormatter.BASIC_ISO_DATE),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 request.getEvent().getId(),
                 request.getId(),
                 request.getRequester().getId(),

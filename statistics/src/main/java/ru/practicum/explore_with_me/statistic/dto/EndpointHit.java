@@ -2,9 +2,11 @@ package ru.practicum.explore_with_me.statistic.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class EndpointHit {
     private Long id;
     private String app;

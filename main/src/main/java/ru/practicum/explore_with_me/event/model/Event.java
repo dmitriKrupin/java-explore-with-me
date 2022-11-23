@@ -31,7 +31,8 @@ public class Event {
     private User initiator;
     private Long views; //Количество просмотрев события
     @Column(name = "confirmed_requests")
-    private Long confirmedRequests; //Количество одобренных заявок на участие в данном событии
+    private Long confirmedRequests;
+    //Количество одобренных заявок на участие в данном событии
     private String description;
     @Column(name = "participant_limit")
     private Long participantLimit; //Ограничение на количество участников. Значение 0 - означает отсутствие ограничения

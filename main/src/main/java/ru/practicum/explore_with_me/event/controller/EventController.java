@@ -7,6 +7,8 @@ import ru.practicum.explore_with_me.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.event.dto.EventShortDto;
 import ru.practicum.explore_with_me.event.service.EventService;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -26,15 +28,19 @@ public class EventController {
             @RequestParam(required = false, name = "onlyAvailable") Boolean onlyAvailable,
             @RequestParam(required = false, name = "sort") String sort,
             @RequestParam(required = false, name = "from", defaultValue = "0") Long from,
-            @RequestParam(required = false, name = "size", defaultValue = "10") Long size) {
+            @RequestParam(required = false, name = "size", defaultValue = "10") Long size,
+            HttpServletRequest request)
+            throws IOException, InterruptedException {
         log.info("Получаем GET запрос к эндпойнту /events");
         return eventService.getAllEvents(text, categories, paid, rangeStart,
-                rangeEnd, onlyAvailable, sort, from, size);
+                rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{id}")
-    private EventFullDto getEventById(@PathVariable Long id) {
+    private EventFullDto getEventById(
+            @PathVariable Long id, HttpServletRequest request)
+            throws IOException, InterruptedException {
         log.info("Получаем GET запрос к эндпойнту /events/{}", id);
-        return eventService.getEventById(id);
+        return eventService.getEventById(id, request);
     }
 }

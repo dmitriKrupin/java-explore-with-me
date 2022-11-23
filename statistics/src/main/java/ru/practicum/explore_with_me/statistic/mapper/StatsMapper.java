@@ -10,13 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatsMapper {
-    public static Stats toStats(EndpointHit endpointHit) {
+    public static Stats toStats(EndpointHit endpointHit, Long hits) {
         return new Stats(
                 endpointHit.getApp(),
                 endpointHit.getUri(),
                 endpointHit.getIp(),
                 LocalDateTime.parse(endpointHit.getTimestamp(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                hits);
     }
 
     public static ViewStats toViewStats(Stats stat) {

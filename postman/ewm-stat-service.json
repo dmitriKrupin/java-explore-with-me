@@ -1,9 +1,8 @@
 {
   "info": {
-    "_postman_id": "93bfb851-d76c-42e2-9a6c-e33b581f35bd",
+    "_postman_id": "ddcea0f4-3db7-424a-a3de-71040e6fe3e0",
     "name": "\"Explore with me\" API статистика",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "13708500"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {

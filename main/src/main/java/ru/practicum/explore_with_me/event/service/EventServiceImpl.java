@@ -1,5 +1,8 @@
 package ru.practicum.explore_with_me.event.service;
 
+import com.google.gson.Gson;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore_with_me.category.model.Category;
 import ru.practicum.explore_with_me.category.repository.CategoryRepository;
@@ -22,11 +25,16 @@ import ru.practicum.explore_with_me.request.repository.RequestRepository;
 import ru.practicum.explore_with_me.user.model.User;
 import ru.practicum.explore_with_me.user.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -47,19 +55,51 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> getAllEvents(
             String text, String categories, Boolean paid, String rangeStart,
-            String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size) {
-        List<Event> events = eventRepository.findAllByAnnotationLikeAndCategoryIdAndPaid(
-                text, Long.parseLong(categories), paid);
+            String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size,
+            HttpServletRequest request) throws IOException, InterruptedException {
+        List<Event> events = eventRepository
+                .findAllByAnnotationLikeAndCategoryIdAndPaid(
+                        text, Long.parseLong(categories), paid);
+        addHit(request.getRequestURI(), request.getRemoteAddr());
         return EventMapper.toEventShortDtoList(events);
     }
 
     @Override
-    public EventFullDto getEventById(Long id) {
+    public EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, InterruptedException {
+        addHit(request.getRequestURI(), request.getRemoteAddr());
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + id + " нет"));
+        event.setViews(event.getViews() + 1);
+        eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + id + " нет"));
-        return EventMapper.toEventFullDto(event, category);
+        EventFullDto eventFullDto;
+        if (event.getState().equals(Status.PUBLISHED)) {
+            eventFullDto = EventMapper.toPublishedEventFullDto(event, category);
+        } else {
+            eventFullDto = EventMapper.toEventFullDto(event, category);
+        }
+        return eventFullDto;
+    }
+
+    private void addHit(String uri, String ip) throws IOException, InterruptedException {
+        URI url = URI.create("http://localhost:9090/hit");
+        Map<Object, Object> data = new HashMap<>();
+        data.put("app", "ewm-main-service");
+        data.put("uri", uri);
+        data.put("ip", ip);
+        data.put("timestamp", LocalDateTime.now().format(DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss")));
+        Gson gson = new Gson();
+        String likeSerialized = gson.toJson(data);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(likeSerialized))
+                .uri(url)
+                .header("Content-Type", "application/json")
+                .build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+        HttpResponse<String> response = client.send(request, handler);
     }
 
     @Override
@@ -93,7 +133,13 @@ public class EventServiceImpl implements EventService {
             event.setTitle(updateEventRequest.getTitle());
 
             eventRepository.save(event);
-            return EventMapper.toEventFullDto(event, category);
+            EventFullDto eventFullDto;
+            if (event.getState().equals(Status.PUBLISHED)) {
+                eventFullDto = EventMapper.toPublishedEventFullDto(event, category);
+            } else {
+                eventFullDto = EventMapper.toEventFullDto(event, category);
+            }
+            return eventFullDto;
         } else {
             throw new RuntimeException("Пользователь с id " + userId + " не может вносить изменения в это событие.");
         }
@@ -106,11 +152,33 @@ public class EventServiceImpl implements EventService {
         Category category = categoryRepository.findById(newEventDto.getCategory())
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + newEventDto.getCategory() + " нет"));
         addLocation(newEventDto);
-        Event event = EventMapper.toNewEvent(newEventDto, category, user);
-
-        event.setState(Status.PENDING);
+        Long views = 0L;
+        Event event = EventMapper
+                .toNewEvent(newEventDto, category, user, Status.PENDING, views);
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, category);
+    }
+
+    private Long getView(/*String start, String end, */List<String> uris/*, Boolean unique*/)
+            throws IOException, InterruptedException, URISyntaxException {
+        HttpGet someHttpGet = new HttpGet("http://localhost:9090/stats");
+        URI uri = new URIBuilder(someHttpGet.getURI())
+                //.addParameter("start", start)
+                //.addParameter("end", end)
+                .addParameter("uris", String.valueOf(uris))
+                //.addParameter("unique", String.valueOf(unique))
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(uri)
+                .header("Accept", "application/json")
+                .build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+        HttpResponse<String> response = client.send(request, handler);
+        String answer = response.body();
+        System.out.println(answer);
+        return null;
     }
 
     @Override
@@ -139,8 +207,6 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
-        //todo: Обратите внимание:
-        // Отменить можно только событие в состоянии ожидания модерации.
         if (event.getState().equals(Status.PENDING)) {
             event.setState(Status.CANCELED);
             return EventMapper.toEventFullDto(event, category);
@@ -233,7 +299,13 @@ public class EventServiceImpl implements EventService {
         event.setTitle(adminUpdateEventRequest.getTitle());
 
         eventRepository.save(event);
-        return EventMapper.toEventFullDto(event, category);
+        EventFullDto eventFullDto;
+        if (event.getState().equals(Status.PUBLISHED)) {
+            eventFullDto = EventMapper.toPublishedEventFullDto(event, category);
+        } else {
+            eventFullDto = EventMapper.toEventFullDto(event, category);
+        }
+        return eventFullDto;
     }
 
     @Override
@@ -241,16 +313,17 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         event.setState(Status.PUBLISHED);
+        event.setPublishedOn(LocalDateTime.now());
         eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
-        return EventMapper.toEventFullDto(event, category);
+        return EventMapper.toPublishedEventFullDto(event, category);
     }
 
     @Override
     public EventFullDto rejectedEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
+                .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         event.setState(Status.CANCELED);
         eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())

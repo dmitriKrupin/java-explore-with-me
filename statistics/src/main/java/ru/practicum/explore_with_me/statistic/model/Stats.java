@@ -22,10 +22,11 @@ public class Stats {
     private LocalDateTime timestamp;
     private Long hits;
 
-    public Stats(String app, String uri, String ip, LocalDateTime timestamp) {
+    public Stats(String app, String uri, String ip, LocalDateTime timestamp, Long hits) {
         this.app = app;
         this.uri = uri;
         this.ip = ip;
         this.timestamp = timestamp;
+        this.hits = hits;
     }
 }

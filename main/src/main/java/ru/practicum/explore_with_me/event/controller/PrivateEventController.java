@@ -12,6 +12,8 @@ import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
 
 import javax.validation.constraints.PositiveOrZero;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -39,7 +41,8 @@ public class PrivateEventController {
     @PostMapping
     private EventFullDto addEvent(
             @Validated @PositiveOrZero @PathVariable Long userId,
-            @Validated @RequestBody NewEventDto newEventDto) {
+            @Validated @RequestBody NewEventDto newEventDto)
+            throws IOException, InterruptedException, URISyntaxException {
         log.info("Получаем POST запрос к эндпойнту /users/{}/events", userId);
         return eventService.addEvent(userId, newEventDto);
     }

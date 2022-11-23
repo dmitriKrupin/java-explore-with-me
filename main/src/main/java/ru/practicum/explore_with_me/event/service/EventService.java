@@ -8,20 +8,24 @@ import ru.practicum.explore_with_me.request.dto.AdminUpdateEventRequest;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.dto.UpdateEventRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 public interface EventService {
     List<EventShortDto> getAllEvents(
             String text, String categories, Boolean paid, String rangeStart,
-            String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size);
+            String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size,
+            HttpServletRequest request) throws IOException, InterruptedException;
 
-    EventFullDto getEventById(Long id);
+    EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, InterruptedException;
 
     List<EventShortDto> getAllEventsByUser(Long userId);
 
     EventFullDto updateEventByUser(Long userId, UpdateEventRequest updateEventRequest);
 
-    EventFullDto addEvent(Long userId, NewEventDto newEventDto);
+    EventFullDto addEvent(Long userId, NewEventDto newEventDto) throws IOException, InterruptedException, URISyntaxException;
 
     Location addLocation(NewEventDto newEventDto);
 

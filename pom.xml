@@ -27,8 +27,6 @@
     <modules>
         <module>main</module>
         <module>statistics</module>
-        <module>client</module>
-        <module>common</module>
     </modules>
 
     <build>

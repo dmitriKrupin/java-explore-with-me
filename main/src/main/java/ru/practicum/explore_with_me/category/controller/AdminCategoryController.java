@@ -11,8 +11,8 @@ import ru.practicum.explore_with_me.category.service.CategoryService;
 import javax.validation.constraints.PositiveOrZero;
 
 @Slf4j
+@RestController
 @RequestMapping(path = "/admin/categories")
-
 public class AdminCategoryController {
     @Autowired
     private CategoryService categoryService;

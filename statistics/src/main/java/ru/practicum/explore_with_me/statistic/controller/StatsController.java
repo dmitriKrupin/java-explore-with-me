@@ -24,10 +24,13 @@ public class StatsController {
 
     @GetMapping("/stats")
     public List<ViewStats> getStatistics(
-            @RequestParam String start,
-            @RequestParam String end,
-            @RequestParam List<String> uris,
-            @RequestParam Boolean unique) {
+            @RequestParam(required = false, name = "start",
+                    defaultValue = "0001-01-01 00:00:00") String start,
+            @RequestParam(required = false, name = "end",
+                    defaultValue = "9000-01-01 00:00:00") String end,
+            @RequestParam(required = false, name = "uris") List<String> uris,
+            @RequestParam(required = false, name = "unique",
+            defaultValue = "true") Boolean unique) {
         log.info("Получаем GET запрос к эндпойнту /stats");
         return statService.getStatistics(start, end, uris, unique);
     }

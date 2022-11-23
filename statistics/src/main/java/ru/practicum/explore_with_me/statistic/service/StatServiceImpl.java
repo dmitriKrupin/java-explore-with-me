@@ -22,7 +22,9 @@ public class StatServiceImpl implements StatService {
     @Override
     public void saveRequestToEndpoint(EndpointHit endpointHit) {
         //Сохранение информации о том, что к эндпоинту был запрос
-        Stats stats = StatsMapper.toStats(endpointHit);
+        Long hits = 0L;
+        hits++;
+        Stats stats = StatsMapper.toStats(endpointHit, hits);
         //todo: добавить счетчик просмотров
         statRepository.save(stats);
     }
@@ -30,15 +32,13 @@ public class StatServiceImpl implements StatService {
     @Override
     public List<ViewStats> getStatistics(
             String start, String end, List<String> uris, Boolean unique) {
-        //todo: Получение статистики по посещениям.
-        // Обратите внимание: значение даты и времени нужно закодировать
-        // (например используя java.net.URLEncoder.encode)
         LocalDateTime startTime = LocalDateTime.parse(start,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime endTime = LocalDateTime.parse(end,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         List<Stats> stats = statRepository
-                .findAllByTimestampAfterAndTimestampBeforeAndUriIn(startTime, endTime, uris);
+                .findAllByTimestampAfterAndTimestampBeforeAndUriIn(
+                        startTime, endTime, uris);
         return StatsMapper.toViewStatsList(stats);
     }
 }
