@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.explore_with_me.event.model.Event;
 import ru.practicum.explore_with_me.event.model.Status;
 import ru.practicum.explore_with_me.event.repository.EventRepository;
+import ru.practicum.explore_with_me.exception.BadRequestException;
 import ru.practicum.explore_with_me.exception.NotFoundException;
 import ru.practicum.explore_with_me.request.dto.ParticipationRequestDto;
 import ru.practicum.explore_with_me.request.mapper.RequestMapper;
@@ -53,10 +54,18 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
-        Request request = new Request(event, user, LocalDateTime.now(), event.getState());
-        request.setStatus(Status.PENDING);
-        requestRepository.save(request);
-        return RequestMapper.toParticipationRequestDto(request);
+        if (event.getState().equals(Status.PUBLISHED) &&
+                !event.getInitiator().getId().equals(userId) &&
+                !event.getParticipantLimit().equals(event.getViews())/* &&
+                !event.getRequestModeration()*/) {
+            Request request = new Request(
+                    event, user, LocalDateTime.now(), event.getState());
+            request.setStatus(Status.PENDING);
+            requestRepository.save(request);
+            return RequestMapper.toParticipationRequestDto(request);
+        } else {
+            throw new BadRequestException("Ошибка запроса для события с id " + eventId);
+        }
     }
 
     @Override

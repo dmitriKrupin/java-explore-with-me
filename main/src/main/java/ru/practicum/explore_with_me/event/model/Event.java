@@ -35,7 +35,8 @@ public class Event {
     //Количество одобренных заявок на участие в данном событии
     private String description;
     @Column(name = "participant_limit")
-    private Long participantLimit; //Ограничение на количество участников. Значение 0 - означает отсутствие ограничения
+    private Long participantLimit;
+    //Ограничение на количество участников. Значение 0 - означает отсутствие ограничения
     private Status state; //Список состояний жизненного цикла события
     @Column(name = "created_on")
     private LocalDateTime createdOn; //Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")

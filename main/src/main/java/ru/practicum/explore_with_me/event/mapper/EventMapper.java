@@ -108,6 +108,8 @@ public class EventMapper {
                 user,
                 views,
                 null,
+                //todo: Количество одобренных заявок на участие в данном событии
+                // нужен запрос в базу заявок
                 newEventDto.getDescription(),
                 newEventDto.getParticipantLimit(),
                 state,
