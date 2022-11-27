@@ -19,7 +19,7 @@ public interface EventService {
             String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size,
             HttpServletRequest request) throws IOException, InterruptedException;
 
-    EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, InterruptedException;
+    EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, InterruptedException, URISyntaxException;
 
     List<EventShortDto> getAllEventsByUser(Long userId);
 

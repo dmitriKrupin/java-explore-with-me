@@ -29,7 +29,7 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "initiator_id")
     private User initiator;
-    private Long views; //Количество просмотрев события
+    private Long views; //todo: Количество просмотрев события
     @Column(name = "confirmed_requests")
     private Long confirmedRequests;
     //Количество одобренных заявок на участие в данном событии

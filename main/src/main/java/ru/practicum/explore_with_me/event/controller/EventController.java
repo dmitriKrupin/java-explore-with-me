@@ -9,6 +9,7 @@ import ru.practicum.explore_with_me.event.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -32,6 +33,8 @@ public class EventController {
             HttpServletRequest request)
             throws IOException, InterruptedException {
         log.info("Получаем GET запрос к эндпойнту /events");
+        log.info("Клиент с ip: {}", request.getRemoteAddr());
+        log.info("Путь запроса: {}", request.getRequestURI());
         return eventService.getAllEvents(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size, request);
     }
@@ -39,8 +42,10 @@ public class EventController {
     @GetMapping("/{id}")
     private EventFullDto getEventById(
             @PathVariable Long id, HttpServletRequest request)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, URISyntaxException {
         log.info("Получаем GET запрос к эндпойнту /events/{}", id);
+        log.info("Клиент с ip: {}", request.getRemoteAddr());
+        log.info("Путь запроса: {}", request.getRequestURI());
         return eventService.getEventById(id, request);
     }
 }

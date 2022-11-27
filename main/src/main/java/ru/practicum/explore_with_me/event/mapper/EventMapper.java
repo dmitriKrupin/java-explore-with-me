@@ -97,7 +97,7 @@ public class EventMapper {
 
     public static Event toNewEvent(
             NewEventDto newEventDto, Category category, User user, Status state,
-            Long views) {
+            Long views, Long confirmedRequests) {
         return new Event(
                 newEventDto.getTitle(),
                 newEventDto.getAnnotation(),
@@ -107,9 +107,7 @@ public class EventMapper {
                         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 user,
                 views,
-                null,
-                //todo: Количество одобренных заявок на участие в данном событии
-                // нужен запрос в базу заявок
+                confirmedRequests,
                 newEventDto.getDescription(),
                 newEventDto.getParticipantLimit(),
                 state,

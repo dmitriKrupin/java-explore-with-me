@@ -60,16 +60,24 @@ public class EventServiceImpl implements EventService {
         List<Event> events = eventRepository
                 .findAllByAnnotationLikeAndCategoryIdAndPaid(
                         text, Long.parseLong(categories), paid);
-        addHit(request.getRequestURI(), request.getRemoteAddr());
+        try {
+            addHit(request.getRequestURI(), request.getRemoteAddr());
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
         return EventMapper.toEventShortDtoList(events);
     }
 
     @Override
-    public EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, InterruptedException {
-        addHit(request.getRequestURI(), request.getRemoteAddr());
+    public EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, InterruptedException, URISyntaxException {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + id + " нет"));
-        event.setViews(event.getViews() + 1);
+        try {
+            addHit(request.getRequestURI(), request.getRemoteAddr());
+            event.setViews(getViewByEventId(request.getRequestURI()));
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
         eventRepository.save(event);
         Category category = categoryRepository.findById(event.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + id + " нет"));
@@ -153,20 +161,18 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такой категории c id " + newEventDto.getCategory() + " нет"));
         addLocation(newEventDto);
         Long views = 0L;
-        Event event = EventMapper
-                .toNewEvent(newEventDto, category, user, Status.PENDING, views);
+        Long confirmedRequests = 0L;
+        Event event = EventMapper.toNewEvent(newEventDto, category, user,
+                Status.PENDING, views, confirmedRequests);
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, category);
     }
 
-    private Long getView(/*String start, String end, */List<String> uris/*, Boolean unique*/)
+    private Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
         HttpGet someHttpGet = new HttpGet("http://localhost:9090/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())
-                //.addParameter("start", start)
-                //.addParameter("end", end)
-                .addParameter("uris", String.valueOf(uris))
-                //.addParameter("unique", String.valueOf(unique))
+                .addParameter("uris", uris)
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
@@ -176,9 +182,10 @@ public class EventServiceImpl implements EventService {
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = client.send(request, handler);
-        String answer = response.body();
-        System.out.println(answer);
-        return null;
+        int index = response.body().indexOf("hits\":") + 6;
+        String view = response.body()
+                .substring(index).replaceAll("}]", "");
+        return Long.parseLong(view);
     }
 
     @Override
@@ -227,19 +234,25 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public ParticipationRequestDto confirmedRequestByUser(Long userId, Long eventId, Long reqId) {
-        //todo: Обратите внимание:
-        // если для события лимит заявок равен 0 или отключена пре-модерация заявок,
-        // то подтверждение заявок не требуется
-        // нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие
-        // если при подтверждении данной заявки, лимит заявок для события исчерпан,
-        // то все неподтверждённые заявки необходимо отклонить
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Request request = requestRepository.findById(reqId)
                 .orElseThrow(() -> new NotFoundException("Такой заявки c id " + reqId + " нет"));
+        Long requestLimit = event.getParticipantLimit() -
+                event.getConfirmedRequests();
+
         request.setStatus(Status.CONFIRMED);
+        event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+        eventRepository.save(event);
+        requestRepository.save(request);
+
+        if (requestLimit <= 0) {
+            request.setStatus(Status.REJECTED);
+            requestRepository.save(request);
+        }
+
         return RequestMapper.toParticipationRequestDto(request);
     }
 
@@ -252,6 +265,7 @@ public class EventServiceImpl implements EventService {
         Request request = requestRepository.findById(reqId)
                 .orElseThrow(() -> new NotFoundException("Такой заявки c id " + reqId + " нет"));
         request.setStatus(Status.REJECTED);
+        requestRepository.save(request);
         return RequestMapper.toParticipationRequestDto(request);
     }
 
