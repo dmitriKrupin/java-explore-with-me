@@ -52,7 +52,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
 
     @Value("${stats-server.url}")
-    private String statsPath;
+    private String STATS_PATH;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, LocationRepository locationRepository) {
@@ -74,12 +74,12 @@ public class EventServiceImpl implements EventService {
                     .findAllByAnnotationLikeOrCategoryIdInAndPaidOrderByEventDateAsc(
                             text, categories, paid);
         } else if (sort != null && sort.equals("VIEWS")) {
-            events = eventRepository.
-                    findAllByAnnotationLikeOrCategoryIdInAndPaidOrderByViewsAsc(
+            events = eventRepository
+                    .findAllByAnnotationLikeOrCategoryIdInAndPaidOrderByViewsAsc(
                             text, categories, paid);
         } else {
-            events = eventRepository.
-                    findAllEventsByFilters(
+            events = eventRepository
+                    .findAllEventsByFilters(
                             text, categories, paid);
         }
         try {
@@ -117,7 +117,7 @@ public class EventServiceImpl implements EventService {
 
     private void addHit(String uri, String ip)
             throws IOException, InterruptedException {
-        URI url = URI.create(statsPath + "/hit");
+        URI url = URI.create(STATS_PATH + "/hit");
         Map<Object, Object> data = new HashMap<>();
         data.put("app", "ewm-main-service");
         data.put("uri", uri);
@@ -196,9 +196,7 @@ public class EventServiceImpl implements EventService {
 
     private Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
-        //HttpGet someHttpGet = new HttpGet("http://localhost:9090/stats");
-        HttpGet someHttpGet = new HttpGet(statsPath + "/stats");
-
+        HttpGet someHttpGet = new HttpGet(STATS_PATH + "/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())
                 .addParameter("uris", uris)
                 .build();
@@ -364,5 +362,4 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         return EventMapper.toEventFullDto(event, category);
     }
-
 }
