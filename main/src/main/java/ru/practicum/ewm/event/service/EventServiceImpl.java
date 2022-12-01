@@ -67,7 +67,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllEvents(
             String text, List<Long> categories, Boolean paid, String rangeStart,
             String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size,
-            HttpServletRequest request) {
+            HttpServletRequest request) throws IOException, InterruptedException {
         List<Event> events;
         if (sort != null && sort.equals("EVENT_DATE")) {
             events = eventRepository
@@ -85,20 +85,20 @@ public class EventServiceImpl implements EventService {
         try {
             addHit(request.getRequestURI(), request.getRemoteAddr());
         } catch (Exception exception) {
-            log.error(exception.getMessage());
+            log.error(exception.getCause().getMessage());
         }
         return EventMapper.toEventShortDtoList(events);
     }
 
     @Override
-    public EventFullDto getEventById(Long id, HttpServletRequest request) {
+    public EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, URISyntaxException, InterruptedException {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + id + " нет"));
         try {
             addHit(request.getRequestURI(), request.getRemoteAddr());
             event.setViews(getViewByEventId(request.getRequestURI()));
         } catch (Exception exception) {
-            log.error(exception.getMessage());
+            log.error(exception.getCause().getMessage());
         }
         eventRepository.save(event);
         //todo: Сохранение события через получение события довольно странный паттерн.
@@ -118,6 +118,7 @@ public class EventServiceImpl implements EventService {
     private void addHit(String uri, String ip)
             throws IOException, InterruptedException {
         URI url = URI.create(statsPath + "/hit");
+        //URI url = URI.create("http://localhost:9090" + "/hit");
         Map<Object, Object> data = new HashMap<>();
         data.put("app", "ewm-main-service");
         data.put("uri", uri);
@@ -197,6 +198,7 @@ public class EventServiceImpl implements EventService {
     private Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
         HttpGet someHttpGet = new HttpGet(statsPath + "/stats");
+        //HttpGet someHttpGet = new HttpGet("http://localhost:9090" + "/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())
                 .addParameter("uris", uris)
                 .build();
