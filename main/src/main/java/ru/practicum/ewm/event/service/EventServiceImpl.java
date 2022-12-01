@@ -52,7 +52,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
 
     @Value("${stats-server.url}")
-    private String STATS_PATH;
+    private String statsPath;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, LocationRepository locationRepository) {
@@ -117,7 +117,7 @@ public class EventServiceImpl implements EventService {
 
     private void addHit(String uri, String ip)
             throws IOException, InterruptedException {
-        URI url = URI.create(STATS_PATH + "/hit");
+        URI url = URI.create(statsPath + "/hit");
         Map<Object, Object> data = new HashMap<>();
         data.put("app", "ewm-main-service");
         data.put("uri", uri);
@@ -196,7 +196,7 @@ public class EventServiceImpl implements EventService {
 
     private Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
-        HttpGet someHttpGet = new HttpGet(STATS_PATH + "/stats");
+        HttpGet someHttpGet = new HttpGet(statsPath + "/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())
                 .addParameter("uris", uris)
                 .build();
