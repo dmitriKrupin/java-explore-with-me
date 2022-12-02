@@ -12,8 +12,8 @@ import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EventMapper {
     public static EventShortDto toEventShortDto(Event event, Category category) {
@@ -33,11 +33,9 @@ public class EventMapper {
 
     public static List<EventShortDto> toEventShortDtoList(
             List<Event> events) {
-        List<EventShortDto> eventShortDtoList = new ArrayList<>();
-        for (Event entry : events) {
-            eventShortDtoList.add(EventMapper.toEventShortDto(entry, entry.getCategory()));
-        }
-        return eventShortDtoList;
+        return events.stream()
+                .map(entry -> EventMapper.toEventShortDto(entry, entry.getCategory()))
+                .collect(Collectors.toList());
     }
 
     public static EventFullDto toEventFullDto(Event event, Category category) {
@@ -88,11 +86,9 @@ public class EventMapper {
     }
 
     public static List<EventFullDto> toEventFullDtoList(List<Event> events) {
-        List<EventFullDto> eventFullDtoList = new ArrayList<>();
-        for (Event entry : events) {
-            eventFullDtoList.add(EventMapper.toEventFullDto(entry, entry.getCategory()));
-        }
-        return eventFullDtoList;
+        return events.stream()
+                .map(entry -> EventMapper.toEventFullDto(entry, entry.getCategory()))
+                .collect(Collectors.toList());
     }
 
     public static Event toNewEvent(

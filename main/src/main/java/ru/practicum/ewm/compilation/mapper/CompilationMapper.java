@@ -7,8 +7,8 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompilationMapper {
     public static Compilation toCompilation(
@@ -30,11 +30,9 @@ public class CompilationMapper {
     }
 
     public static List<CompilationDto> toCompilationDtoList(List<Compilation> compilations) {
-        List<CompilationDto> compilationDtoList = new ArrayList<>();
-        for (Compilation entry : compilations) {
-            compilationDtoList.add(CompilationMapper
-                    .toCompilationDto(entry, EventMapper.toEventShortDtoList(entry.getEvents())));
-        }
-        return compilationDtoList;
+        return compilations.stream()
+                .map(entry -> CompilationMapper
+                .toCompilationDto(entry, EventMapper.toEventShortDtoList(entry.getEvents())))
+                .collect(Collectors.toList());
     }
 }

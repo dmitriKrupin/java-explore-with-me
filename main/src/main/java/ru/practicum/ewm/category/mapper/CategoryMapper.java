@@ -4,8 +4,8 @@ import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.category.model.Category;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CategoryMapper {
     public static CategoryDto toCategoryDto(Category category) {
@@ -13,11 +13,9 @@ public class CategoryMapper {
     }
 
     public static List<CategoryDto> toCategoryDtoList(List<Category> categories) {
-        List<CategoryDto> categoryDtoList = new ArrayList<>();
-        for (Category entry : categories) {
-            categoryDtoList.add(CategoryMapper.toCategoryDto(entry));
-        }
-        return categoryDtoList;
+        return categories.stream()
+                .map(CategoryMapper::toCategoryDto)
+                .collect(Collectors.toList());
     }
 
     public static Category toCategory(CategoryDto categoryDto) {

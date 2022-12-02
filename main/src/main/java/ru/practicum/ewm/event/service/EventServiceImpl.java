@@ -40,7 +40,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -67,7 +71,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllEvents(
             String text, List<Long> categories, Boolean paid, String rangeStart,
             String rangeEnd, Boolean onlyAvailable, String sort, Long from, Long size,
-            HttpServletRequest request) throws IOException, InterruptedException {
+            HttpServletRequest request) {
         List<Event> events;
         if (sort != null && sort.equals("EVENT_DATE")) {
             events = eventRepository
@@ -91,7 +95,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto getEventById(Long id, HttpServletRequest request) throws IOException, URISyntaxException, InterruptedException {
+    public EventFullDto getEventById(Long id, HttpServletRequest request) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + id + " нет"));
         try {
@@ -305,11 +309,9 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Status> getStatusFromString(List<String> state) {
-        List<Status> statusList = new ArrayList<>();
-        for (String entry : state) {
-            statusList.add(Status.valueOf(entry));
-        }
-        return statusList;
+        return state.stream()
+                .map(Status::valueOf)
+                .collect(Collectors.toList());
     }
 
     @Override

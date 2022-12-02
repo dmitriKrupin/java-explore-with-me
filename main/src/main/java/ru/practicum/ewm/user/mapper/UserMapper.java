@@ -4,8 +4,8 @@ import ru.practicum.ewm.user.dto.UserDto;
 import ru.practicum.ewm.user.dto.UserShortDto;
 import ru.practicum.ewm.user.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserMapper {
 
@@ -28,10 +28,8 @@ public class UserMapper {
     }
 
     public static List<UserDto> toUserDtoOutList(List<User> userList) {
-        List<UserDto> userDtoOutList = new ArrayList<>();
-        for (User entry : userList) {
-            userDtoOutList.add(UserMapper.toUserDto(entry));
-        }
-        return userDtoOutList;
+        return userList.stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 }

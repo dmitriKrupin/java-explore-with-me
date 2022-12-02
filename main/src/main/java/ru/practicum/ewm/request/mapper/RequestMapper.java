@@ -4,8 +4,8 @@ import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 import ru.practicum.ewm.request.model.Request;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RequestMapper {
     public static ParticipationRequestDto toParticipationRequestDto(Request request) {
@@ -19,10 +19,8 @@ public class RequestMapper {
     }
 
     public static List<ParticipationRequestDto> toParticipationRequestDtoList(List<Request> requests) {
-        List<ParticipationRequestDto> participationRequestDtoList = new ArrayList<>();
-        for (Request entry : requests) {
-            participationRequestDtoList.add(RequestMapper.toParticipationRequestDto(entry));
-        }
-        return participationRequestDtoList;
+        return requests.stream()
+                .map(RequestMapper::toParticipationRequestDto)
+                .collect(Collectors.toList());
     }
 }
