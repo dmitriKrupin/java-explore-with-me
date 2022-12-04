@@ -25,11 +25,11 @@ import java.util.Map;
 @Slf4j
 public class AddAndGetViewsForEvents {
     @Value("${stats-server.url}")
-    public static String statsPath;
+    public static final String statsPath = "http://localhost:9090";
 
     public static void addHit(String uri, String ip)
             throws IOException, InterruptedException {
-        URI url = URI.create(PathController.PATH + "/hit");
+        URI url = URI.create(statsPath + "/hit");
         Map<Object, Object> data = new HashMap<>();
         data.put("app", "ewm-main-service");
         data.put("uri", uri);
@@ -64,7 +64,7 @@ public class AddAndGetViewsForEvents {
 
     public static Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
-        HttpGet someHttpGet = new HttpGet(PathController.PATH + "/stats");
+        HttpGet someHttpGet = new HttpGet(statsPath + "/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())
                 .addParameter("uris", uris)
                 .build();
