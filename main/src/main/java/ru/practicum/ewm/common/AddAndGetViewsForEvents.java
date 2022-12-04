@@ -29,7 +29,7 @@ public class AddAndGetViewsForEvents {
 
     public static void addHit(String uri, String ip)
             throws IOException, InterruptedException {
-        URI url = URI.create(PathController.PATH_NAME + "/hit");
+        URI url = URI.create(PathController.PATH + "/hit");
         Map<Object, Object> data = new HashMap<>();
         data.put("app", "ewm-main-service");
         data.put("uri", uri);
@@ -64,7 +64,7 @@ public class AddAndGetViewsForEvents {
 
     public static Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
-        HttpGet someHttpGet = new HttpGet(PathController.PATH_NAME + "/stats");
+        HttpGet someHttpGet = new HttpGet(PathController.PATH + "/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())
                 .addParameter("uris", uris)
                 .build();

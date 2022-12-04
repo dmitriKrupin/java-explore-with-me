@@ -10,11 +10,11 @@ public class PathController {
     @Value("${stats-server.url}")
     private String pathName;
 
-    public static String PATH_NAME;
+    public static String PATH;
 
     @Value("${stats-server.url}")
     public void setNameStatic(String pathName) {
-        PathController.PATH_NAME = pathName;
+        PathController.PATH = pathName;
     }
 
 }
