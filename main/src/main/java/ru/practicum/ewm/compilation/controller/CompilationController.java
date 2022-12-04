@@ -3,10 +3,7 @@ package ru.practicum.ewm.compilation.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.service.CompilationService;
 
@@ -25,9 +22,14 @@ public class CompilationController {
     }
 
     @GetMapping
-    public List<CompilationDto> getAllCompilations() {
+    public List<CompilationDto> getAllCompilations(
+            //?pinned=true&from=0&size=1000
+            @RequestParam(required = false) Boolean pinned,
+            @RequestParam(required = false, defaultValue = "0") Long from,
+            @RequestParam(required = false, defaultValue = "10") Long size
+    ) {
         log.info("Получаем GET запрос к эндпойнту /compilations");
-        return compilationService.getAllCompilations();
+        return compilationService.getAllCompilations(pinned, from, size);
     }
 
     @GetMapping("/{compId}")

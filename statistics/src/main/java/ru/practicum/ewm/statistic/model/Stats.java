@@ -1,17 +1,19 @@
 package ru.practicum.ewm.statistic.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "stats", schema = "public")
+@Getter
+@Setter
 public class Stats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,8 @@
 package ru.practicum.ewm.compilation.model;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.ewm.event.model.Event;
 
 import javax.persistence.*;
@@ -9,6 +11,8 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "compilations", schema = "public")
+@Getter
+@Setter
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,30 +30,6 @@ public class Compilation {
     public Compilation(String title, Boolean pinned, List<Event> events) {
         this.title = title;
         this.pinned = pinned;
-        this.events = events;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Boolean getPinned() {
-        return pinned;
-    }
-
-    public List<Event> getEvents() {
-        return events;
-    }
-
-    public void setPinned(Boolean pinned) {
-        this.pinned = pinned;
-    }
-
-    public void setEvents(List<Event> events) {
         this.events = events;
     }
 }

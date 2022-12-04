@@ -2,7 +2,6 @@ package ru.practicum.ewm.category.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.dto.NewCategoryDto;
@@ -35,7 +34,7 @@ public class AdminCategoryController {
     }
 
     @DeleteMapping("/{catId}")
-    public void deleteCategory(@Validated @Positive @PathVariable Long catId) {
+    public void deleteCategory(@Valid @Positive @PathVariable Long catId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/categories/{}", catId);
         categoryService.deleteCategory(catId);
     }

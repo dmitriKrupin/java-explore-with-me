@@ -1,7 +1,9 @@
 package ru.practicum.ewm.request.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Status;
 import ru.practicum.ewm.user.model.User;
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "requests", schema = "public")
+@Getter
+@Setter
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,30 +34,6 @@ public class Request {
         this.event = event;
         this.requester = requester;
         this.created = created;
-        this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public User getRequester() {
-        return requester;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
         this.status = status;
     }
 }

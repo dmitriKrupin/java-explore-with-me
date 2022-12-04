@@ -2,12 +2,12 @@ package ru.practicum.ewm.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.request.dto.AdminUpdateEventRequest;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class AdminEventController {
 
     @PutMapping("/{eventId}")
     public EventFullDto updateEventById(
-            @Validated @Positive @PathVariable Long eventId,
+            @Valid @Positive @PathVariable Long eventId,
             @RequestBody AdminUpdateEventRequest adminUpdateEventRequest) {
         log.info("Получаем PUT запрос к эндпойнту /admin/events/{}", eventId);
         return eventService.updateEventById(eventId, adminUpdateEventRequest);
@@ -49,14 +49,14 @@ public class AdminEventController {
 
     @PatchMapping("/{eventId}/publish")
     public EventFullDto publishedEvent(
-            @Validated @Positive @PathVariable Long eventId) {
+            @Valid @Positive @PathVariable Long eventId) {
         log.info("Получаем PATCH запрос к эндпойнту /admin/events/{}/publish", eventId);
         return eventService.publishedEvent(eventId);
     }
 
     @PatchMapping("/{eventId}/reject")
     public EventFullDto rejectedEvent(
-            @Validated @Positive @PathVariable Long eventId) {
+            @Valid @Positive @PathVariable Long eventId) {
         log.info("Получаем PATCH запрос к эндпойнту /admin/events/{}/reject", eventId);
         return eventService.rejectedEvent(eventId);
     }

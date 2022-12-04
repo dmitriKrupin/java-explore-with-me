@@ -49,7 +49,11 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Такого пользователя c id " + userId + " нет"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
-        if (event.getParticipantLimit() > 0) {
+        Boolean existRequestFromUserAtEvent = requestRepository
+                .existsByRequesterIdAndEventId(eventId, userId);
+        Request request = new Request(
+                event, user, LocalDateTime.now(), Status.PENDING);
+        if (!existRequestFromUserAtEvent && event.getParticipantLimit() > 0) {
             long requestLimit = event.getParticipantLimit() -
                     //Ограничение на количество участников.
                     // Значение 0 - означает отсутствие ограничения
@@ -61,22 +65,16 @@ public class RequestServiceImpl implements RequestService {
             }
             if (event.getState().equals(Status.PUBLISHED) &&
                     !event.getInitiator().getId().equals(userId)) {
-                Request request = new Request(
-                        event, user, LocalDateTime.now(), event.getState());
                 if (!event.getRequestModeration()) {
                     // + если для события отключена пре-модерация запросов на участие,
                     // то запрос должен автоматически перейти в состояние подтвержденного
                     request.setStatus(Status.CONFIRMED);
-                    requestRepository.save(request);
-                    return RequestMapper.toParticipationRequestDto(request);
                 }
-                request.setStatus(Status.PENDING);
-                // todo: - нельзя добавить повторный запрос
-                requestRepository.save(request);
-                return RequestMapper.toParticipationRequestDto(request);
             } else {
-                throw new BadRequestException("Ошибка запроса для события с id " + eventId);
+                request.setStatus(Status.PENDING);
             }
+            requestRepository.save(request);
+            return RequestMapper.toParticipationRequestDto(request);
         } else {
             throw new BadRequestException("Ошибка запроса для события с id " + eventId);
         }

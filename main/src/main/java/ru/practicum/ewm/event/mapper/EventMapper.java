@@ -12,11 +12,13 @@ import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class EventMapper {
-    public static EventShortDto toEventShortDto(Event event, Category category) {
+    public static EventShortDto toEventShortDto(
+            Event event, Category category, Long views) {
         return new EventShortDto(
                 event.getAnnotation(),
                 CategoryMapper.toCategoryDto(category),
@@ -27,18 +29,23 @@ public class EventMapper {
                 UserMapper.toUserShortDto(event.getInitiator()),
                 event.getPaid(),
                 event.getTitle(),
-                event.getViews()
+                views
         );
     }
 
     public static List<EventShortDto> toEventShortDtoList(
-            List<Event> events) {
-        return events.stream()
-                .map(entry -> EventMapper.toEventShortDto(entry, entry.getCategory()))
-                .collect(Collectors.toList());
+            Map<Event, Long> viewsOfEvents) {
+        List<EventShortDto> eventShortDtoList = new ArrayList<>();
+        for (Map.Entry<Event, Long> entry : viewsOfEvents.entrySet()) {
+            EventShortDto eventShortDto = EventMapper
+                    .toEventShortDto(entry.getKey(), entry.getKey().getCategory(), entry.getValue());
+            eventShortDtoList.add(eventShortDto);
+        }
+        return eventShortDtoList;
     }
 
-    public static EventFullDto toEventFullDto(Event event, Category category) {
+    public static EventFullDto toEventFullDto(
+            Event event, Category category, Long views) {
         return new EventFullDto(
                 event.getAnnotation(),
                 CategoryMapper.toCategoryDto(category),
@@ -57,11 +64,12 @@ public class EventMapper {
                 event.getRequestModeration(),
                 String.valueOf(event.getState()),
                 event.getTitle(),
-                event.getViews()
+                views
         );
     }
 
-    public static EventFullDto toPublishedEventFullDto(Event event, Category category) {
+    public static EventFullDto toPublishedEventFullDto(
+            Event event, Category category, Long views) {
         return new EventFullDto(
                 event.getAnnotation(),
                 CategoryMapper.toCategoryDto(category),
@@ -81,19 +89,24 @@ public class EventMapper {
                 event.getRequestModeration(),
                 String.valueOf(event.getState()),
                 event.getTitle(),
-                event.getViews()
+                views
         );
     }
 
-    public static List<EventFullDto> toEventFullDtoList(List<Event> events) {
-        return events.stream()
-                .map(entry -> EventMapper.toEventFullDto(entry, entry.getCategory()))
-                .collect(Collectors.toList());
+    public static List<EventFullDto> toEventFullDtoList(
+            Map<Event, Long> viewsOfEvents) {
+        List<EventFullDto> eventFullDtoList = new ArrayList<>();
+        for (Map.Entry<Event, Long> entry : viewsOfEvents.entrySet()) {
+            EventFullDto eventFullDto = EventMapper
+                    .toEventFullDto(entry.getKey(), entry.getKey().getCategory(), entry.getValue());
+            eventFullDtoList.add(eventFullDto);
+        }
+        return eventFullDtoList;
     }
 
     public static Event toNewEvent(
             NewEventDto newEventDto, Category category, User user, Status state,
-            Long views, Long confirmedRequests) {
+            Long confirmedRequests) {
         return new Event(
                 newEventDto.getTitle(),
                 newEventDto.getAnnotation(),
@@ -102,7 +115,6 @@ public class EventMapper {
                 LocalDateTime.parse(newEventDto.getEventDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 user,
-                views,
                 confirmedRequests,
                 newEventDto.getDescription(),
                 newEventDto.getParticipantLimit(),

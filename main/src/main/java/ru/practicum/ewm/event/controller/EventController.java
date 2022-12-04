@@ -2,13 +2,13 @@ package ru.practicum.ewm.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -50,7 +50,7 @@ public class EventController {
 
     @GetMapping("/{id}")
     public EventFullDto getEventById(
-            @Validated @Positive @PathVariable Long id, HttpServletRequest request)
+            @Valid @Positive @PathVariable Long id, HttpServletRequest request)
             throws IOException, InterruptedException, URISyntaxException {
         log.info("Получаем GET запрос к эндпойнту /events/{}", id);
         log.info("Клиент с ip: {}", request.getRemoteAddr());

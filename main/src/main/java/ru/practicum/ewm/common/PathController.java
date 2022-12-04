@@ -1,0 +1,20 @@
+package ru.practicum.ewm.common;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+
+public class PathController {
+
+    @Value("${stats-server.url}")
+    private String pathName;
+
+    public static String PATH_NAME;
+
+    @Value("${stats-server.url}")
+    public void setNameStatic(String pathName) {
+        PathController.PATH_NAME = pathName;
+    }
+
+}

@@ -34,7 +34,6 @@ CREATE TABLE IF NOT EXISTS events
     paid               BOOLEAN                                 NOT NULL,
     event_date         TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
     initiator_id       BIGINT                                  NOT NULL,
-    views              BIGINT,
     confirmed_requests BIGINT,
     description        VARCHAR                                 NOT NULL,
     state              BIGINT,
@@ -51,7 +50,7 @@ CREATE TABLE IF NOT EXISTS requests
     event_id     BIGINT                                  NOT NULL,
     created      TIMESTAMP                               NOT NULL,
     requester_id BIGINT                                  NOT NULL,
-    status       VARCHAR(255)
+    status       BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS events_list

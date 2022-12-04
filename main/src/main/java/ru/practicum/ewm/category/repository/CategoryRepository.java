@@ -5,4 +5,6 @@ import ru.practicum.ewm.category.model.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Long countByNameLike(String name);
+
+    Boolean existsByName(String name);
 }

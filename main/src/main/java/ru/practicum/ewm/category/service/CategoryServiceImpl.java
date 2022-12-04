@@ -38,13 +38,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto) {
         Category category = new Category();
-        List<Category> categories = categoryRepository.findAll();
-        categories.stream()
-                .filter(entry -> entry.getName().equals(categoryDto.getName()))
-                .forEachOrdered(entry -> {
-                    throw new ConflictException("Категория с таким именем "
-                            + categoryDto.getName() + " уже есть в базе!");
-                });
+        Boolean existsByName = categoryRepository.existsByName(categoryDto.getName());
+        if (existsByName) {
+            throw new ConflictException("Категория с таким именем "
+                    + categoryDto.getName() + " уже есть в базе!");
+        }
         category.setName(categoryDto.getName());
         categoryRepository.save(category);
         return CategoryMapper.toCategoryDto(category);

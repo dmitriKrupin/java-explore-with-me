@@ -6,7 +6,7 @@ import ru.practicum.ewm.compilation.dto.NewCompilationDto;
 import java.util.List;
 
 public interface CompilationService {
-    List<CompilationDto> getAllCompilations();
+    List<CompilationDto> getAllCompilations(Boolean pinned, Long from, Long size);
 
     CompilationDto getCompilationById(Long compId);
 

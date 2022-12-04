@@ -2,7 +2,6 @@ package ru.practicum.ewm.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.user.dto.UserDto;
 import ru.practicum.ewm.user.service.UserService;
@@ -36,7 +35,7 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@Validated @Positive @PathVariable Long userId) {
+    public void deleteUser(@Valid @Positive @PathVariable Long userId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/users/{}", userId);
         userService.deleteUser(userId);
     }

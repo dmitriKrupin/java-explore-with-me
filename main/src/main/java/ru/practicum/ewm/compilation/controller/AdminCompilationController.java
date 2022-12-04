@@ -2,7 +2,6 @@ package ru.practicum.ewm.compilation.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.dto.NewCompilationDto;
@@ -31,37 +30,37 @@ public class AdminCompilationController {
 
     @DeleteMapping("/{compId}")
     public void deleteCompilation(
-            @Validated @Positive @PathVariable Long compId) {
+            @Valid @Positive @PathVariable Long compId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/compilations/{}", compId);
         compilationService.deleteCompilation(compId);
     }
 
     @DeleteMapping("/{compId}/events/{eventId}")
     public void deleteEventFromCompilation(
-            @Validated @Positive @PathVariable Long compId,
-            @Validated @Positive @PathVariable Long eventId) {
+            @Valid @Positive @PathVariable Long compId,
+            @Valid @Positive @PathVariable Long eventId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/compilations/{}/events/{}", compId, eventId);
         compilationService.deleteEventFromCompilation(compId, eventId);
     }
 
     @PatchMapping("/{compId}/events/{eventId}")
     public void addEventToCompilation(
-            @Validated @Positive @PathVariable Long compId,
-            @Validated @Positive @PathVariable Long eventId) {
+            @Valid @Positive @PathVariable Long compId,
+            @Valid @Positive @PathVariable Long eventId) {
         log.info("Получаем PATCH запрос к эндпойнту /admin/compilations/{}/events/{}", compId, eventId);
         compilationService.addEventToCompilation(compId, eventId);
     }
 
     @DeleteMapping("/{compId}/pin")
     public void unpinCompilationOnMainSize(
-            @Validated @Positive @PathVariable Long compId) {
+            @Valid @Positive @PathVariable Long compId) {
         log.info("Получаем DELETE запрос к эндпойнту /admin/compilations/{}/pin", compId);
         compilationService.unpinCompilationOnMainSize(compId);
     }
 
     @PatchMapping("/{compId}/pin")
     public void pinCompilationOnMainSize(
-            @Validated @Positive @PathVariable Long compId) {
+            @Valid @Positive @PathVariable Long compId) {
         log.info("Получаем PATCH запрос к эндпойнту /admin/compilations/{}/pin", compId);
         compilationService.pinCompilationOnMainSize(compId);
     }

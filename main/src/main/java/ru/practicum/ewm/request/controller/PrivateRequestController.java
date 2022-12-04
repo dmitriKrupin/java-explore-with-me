@@ -2,11 +2,11 @@ package ru.practicum.ewm.request.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 import ru.practicum.ewm.request.service.RequestService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -23,23 +23,23 @@ public class PrivateRequestController {
 
     @GetMapping
     public List<ParticipationRequestDto> getAllRequestsByUserInAnotherEvents(
-            @Validated @Positive @PathVariable Long userId) {
+            @Valid @Positive @PathVariable Long userId) {
         log.info("Получаем GET запрос к эндпойнту /users/{}/requests", userId);
         return requestService.getAllRequestsByUserInAnotherEvents(userId);
     }
 
     @PostMapping
     public ParticipationRequestDto addRequestByUserInAnotherEvent(
-            @Validated @Positive @PathVariable Long userId,
-            @Validated @Positive @RequestParam Long eventId) {
+            @Valid @Positive @PathVariable Long userId,
+            @Valid @Positive @RequestParam Long eventId) {
         log.info("Получаем POST запрос к эндпойнту /users/{}/requests", userId);
         return requestService.addRequestByUserInAnotherEvent(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
     public ParticipationRequestDto canceledOwnRequestByUser(
-            @Validated @Positive @PathVariable Long userId,
-            @Validated @Positive @PathVariable Long requestId) {
+            @Valid @Positive @PathVariable Long userId,
+            @Valid @Positive @PathVariable Long requestId) {
         log.info("Получаем POST запрос к эндпойнту /users/{}/requests/{}/cancel", userId, requestId);
         return requestService.canceledOwnRequestByUser(userId, requestId);
     }

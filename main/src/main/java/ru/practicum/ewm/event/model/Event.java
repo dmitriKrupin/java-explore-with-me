@@ -1,7 +1,9 @@
 package ru.practicum.ewm.event.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.user.model.User;
 
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "events", schema = "public")
+@Getter
+@Setter
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +33,6 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "initiator_id")
     private User initiator;
-    private Long views; //Количество просмотрев события
     @Column(name = "confirmed_requests")
     private Long confirmedRequests;
     //Количество одобренных заявок на участие в данном событии
@@ -52,9 +55,10 @@ public class Event {
     private Boolean requestModeration;
     //Нужна ли пре-модерация заявок на участие
 
-    public Event(String title, String annotation, Category category, Boolean paid, LocalDateTime eventDate,
-                 User initiator, Long views, Long confirmedRequests, String description, Long participantLimit,
-                 Status state, LocalDateTime createdOn, LocalDateTime publishedOn, Location location,
+    public Event(String title, String annotation, Category category, Boolean paid,
+                 LocalDateTime eventDate, User initiator, Long confirmedRequests,
+                 String description, Long participantLimit, Status state,
+                 LocalDateTime createdOn, LocalDateTime publishedOn, Location location,
                  Boolean requestModeration) {
         this.title = title;
         this.annotation = annotation;
@@ -62,7 +66,6 @@ public class Event {
         this.paid = paid;
         this.eventDate = eventDate;
         this.initiator = initiator;
-        this.views = views;
         this.confirmedRequests = confirmedRequests;
         this.description = description;
         this.participantLimit = participantLimit;
@@ -71,121 +74,5 @@ public class Event {
         this.publishedOn = publishedOn;
         this.location = location;
         this.requestModeration = requestModeration;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAnnotation() {
-        return annotation;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public Boolean getPaid() {
-        return paid;
-    }
-
-    public LocalDateTime getEventDate() {
-        return eventDate;
-    }
-
-    public User getInitiator() {
-        return initiator;
-    }
-
-    public Long getViews() {
-        return views;
-    }
-
-    public Long getConfirmedRequests() {
-        return confirmedRequests;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Long getParticipantLimit() {
-        return participantLimit;
-    }
-
-    public Status getState() {
-        return state;
-    }
-
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public LocalDateTime getPublishedOn() {
-        return publishedOn;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public Boolean getRequestModeration() {
-        return requestModeration;
-    }
-
-    public void setAnnotation(String annotation) {
-        this.annotation = annotation;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPaid(Boolean paid) {
-        this.paid = paid;
-    }
-
-    public void setEventDate(LocalDateTime eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setParticipantLimit(Long participantLimit) {
-        this.participantLimit = participantLimit;
-    }
-
-    public void setConfirmedRequests(Long confirmedRequests) {
-        this.confirmedRequests = confirmedRequests;
-    }
-
-    public void setState(Status state) {
-        this.state = state;
-    }
-
-    public void setViews(Long views) {
-        this.views = views;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public void setRequestModeration(Boolean requestModeration) {
-        this.requestModeration = requestModeration;
-    }
-
-    public void setPublishedOn(LocalDateTime publishedOn) {
-        this.publishedOn = publishedOn;
     }
 }
