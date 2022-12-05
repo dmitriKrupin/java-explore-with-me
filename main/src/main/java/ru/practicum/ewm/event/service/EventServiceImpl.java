@@ -2,6 +2,7 @@ package ru.practicum.ewm.event.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
@@ -42,6 +43,8 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final LocationRepository locationRepository;
+    @Value("${stats-server.url}")
+    private String statsPath;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, LocationRepository locationRepository) {
@@ -67,7 +70,7 @@ public class EventServiceImpl implements EventService {
                     .findAllEventsByFilters(
                             text, categories, paid);
             List<EventShortDto> viewsGroupEventShortDtoList = EventMapper
-                    .toEventShortDtoList(AddAndGetViewsForEvents.getMapViewsOfEvents(events));
+                    .toEventShortDtoList(new AddAndGetViewsForEvents(statsPath).getMapViewsOfEvents(events));
             viewsGroupEventShortDtoList.sort(Comparator.comparing(EventShortDto::getViews));
             return viewsGroupEventShortDtoList;
         } else {
@@ -76,12 +79,12 @@ public class EventServiceImpl implements EventService {
                             text, categories, paid);
         }
         try {
-            AddAndGetViewsForEvents.addHit(request.getRequestURI(), request.getRemoteAddr());
+            new AddAndGetViewsForEvents(statsPath).addHit(request.getRequestURI(), request.getRemoteAddr());
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());
         }
         return EventMapper.toEventShortDtoList(
-                AddAndGetViewsForEvents.getMapViewsOfEvents(events));
+                new AddAndGetViewsForEvents(statsPath).getMapViewsOfEvents(events));
     }
 
     @Override
@@ -90,9 +93,9 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + id + " нет"));
         Long views = 0L;
         try {
-            AddAndGetViewsForEvents.addHit(
+            new AddAndGetViewsForEvents(statsPath).addHit(
                     request.getRequestURI(), request.getRemoteAddr());
-            views = AddAndGetViewsForEvents.getViewByEventId(
+            views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                     request.getRequestURI());
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());
@@ -113,7 +116,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого пользователя c id " + userId + " нет"));
         List<Event> eventsByUser = eventRepository.findAllByInitiator(user);
         return EventMapper.toEventShortDtoList(
-                AddAndGetViewsForEvents.getMapViewsOfEvents(eventsByUser));
+                new AddAndGetViewsForEvents(statsPath).getMapViewsOfEvents(eventsByUser));
     }
 
     @Override
@@ -125,7 +128,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Такого события c id " + eventId + " нет"));
         Long views = 0L;
         try {
-            views = AddAndGetViewsForEvents.getViewByEventId(
+            views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                     "/events/" + eventId);
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());
@@ -190,7 +193,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         Long views = 0L;
         try {
-            views = AddAndGetViewsForEvents.getViewByEventId(
+            views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                     "/events/" + eventId);
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());
@@ -210,7 +213,7 @@ public class EventServiceImpl implements EventService {
             event.setState(Status.CANCELED);
             Long views = 0L;
             try {
-                views = AddAndGetViewsForEvents.getViewByEventId(
+                views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                         "/events/" + eventId);
             } catch (Exception exception) {
                 log.error(exception.getCause().getMessage());
@@ -279,7 +282,7 @@ public class EventServiceImpl implements EventService {
                 .findEventsWithoutSomeQueries(
                         users, statusList, categories, start, end);
         return EventMapper.toEventFullDtoList(
-                AddAndGetViewsForEvents.getMapViewsOfEvents(events));
+                new AddAndGetViewsForEvents(statsPath).getMapViewsOfEvents(events));
     }
 
     private List<Status> getStatusFromString(List<String> state) {
@@ -312,7 +315,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto;
         Long views = 0L;
         try {
-            views = AddAndGetViewsForEvents.getViewByEventId(
+            views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                     "/events/" + eventId);
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());
@@ -336,7 +339,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         Long views = 0L;
         try {
-            views = AddAndGetViewsForEvents.getViewByEventId(
+            views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                     "/events/" + eventId);
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());
@@ -354,7 +357,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         Long views = 0L;
         try {
-            views = AddAndGetViewsForEvents.getViewByEventId(
+            views = new AddAndGetViewsForEvents(statsPath).getViewByEventId(
                     "/events/" + eventId);
         } catch (Exception exception) {
             log.error(exception.getCause().getMessage());

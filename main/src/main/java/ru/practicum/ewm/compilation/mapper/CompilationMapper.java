@@ -35,10 +35,10 @@ public class CompilationMapper {
     }
 
     public static List<CompilationDto> toCompilationDtoList(
-            List<Compilation> compilations) {
+            List<Compilation> compilations, AddAndGetViewsForEvents addAndGetViewsForEvents) {
         List<CompilationDto> list = new ArrayList<>();
         for (Compilation entry : compilations) {
-            Map<Event, Long> viewsOfEvents = AddAndGetViewsForEvents
+            Map<Event, Long> viewsOfEvents = addAndGetViewsForEvents
                     .getMapViewsOfEvents(entry.getEvents());
             CompilationDto compilationDto = CompilationMapper
                     .toCompilationDto(entry, EventMapper.toEventShortDtoList(viewsOfEvents));

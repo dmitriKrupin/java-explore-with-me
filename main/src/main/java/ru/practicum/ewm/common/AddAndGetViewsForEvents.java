@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.request.dto.ViewStats;
 
@@ -24,10 +23,13 @@ import java.util.Map;
 
 @Slf4j
 public class AddAndGetViewsForEvents {
-    @Value("${stats-server.url}")
-    public static final String statsPath = "http://localhost:9090";
+    public String statsPath;
 
-    public static void addHit(String uri, String ip)
+    public AddAndGetViewsForEvents(String statsPath) {
+        this.statsPath = statsPath;
+    }
+
+    public void addHit(String uri, String ip)
             throws IOException, InterruptedException {
         URI url = URI.create(statsPath + "/hit");
         Map<Object, Object> data = new HashMap<>();
@@ -48,7 +50,7 @@ public class AddAndGetViewsForEvents {
         HttpResponse<String> response = client.send(request, handler);
     }
 
-    public static Map<Event, Long> getMapViewsOfEvents(List<Event> events) {
+    public Map<Event, Long> getMapViewsOfEvents(List<Event> events) {
         Map<Event, Long> viewsOfEvents = new HashMap<>();
         for (Event entry : events) {
             Long views = 0L;
@@ -62,7 +64,7 @@ public class AddAndGetViewsForEvents {
         return viewsOfEvents;
     }
 
-    public static Long getViewByEventId(String uris)
+    public Long getViewByEventId(String uris)
             throws IOException, InterruptedException, URISyntaxException {
         HttpGet someHttpGet = new HttpGet(statsPath + "/stats");
         URI uri = new URIBuilder(someHttpGet.getURI())

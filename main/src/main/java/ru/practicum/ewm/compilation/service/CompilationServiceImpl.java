@@ -2,6 +2,7 @@ package ru.practicum.ewm.compilation.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.common.AddAndGetViewsForEvents;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
@@ -22,6 +23,8 @@ import java.util.Map;
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
+    @Value("${stats-server.url}")
+    private String statsPath;
 
     @Autowired
     public CompilationServiceImpl(CompilationRepository compilationRepository, EventRepository eventRepository) {
@@ -32,14 +35,15 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> getAllCompilations(Boolean pinned, Long from, Long size) {
         List<Compilation> compilations = compilationRepository.findAllByPinned(pinned);
-        return CompilationMapper.toCompilationDtoList(compilations);
+        return CompilationMapper.toCompilationDtoList(
+                compilations, new AddAndGetViewsForEvents(statsPath));
     }
 
     @Override
     public CompilationDto getCompilationById(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + compId + " нет"));
-        Map<Event, Long> viewsOfEvents = AddAndGetViewsForEvents
+        Map<Event, Long> viewsOfEvents = new AddAndGetViewsForEvents(statsPath)
                 .getMapViewsOfEvents(compilation.getEvents());
         return CompilationMapper.toCompilationDto(
                 compilation, EventMapper.toEventShortDtoList(viewsOfEvents));
@@ -51,7 +55,7 @@ public class CompilationServiceImpl implements CompilationService {
                 newCompilationDto.getEvents(), newCompilationDto.getTitle());
         Compilation compilation = CompilationMapper.toCompilation(newCompilationDto, events);
         compilationRepository.save(compilation);
-        Map<Event, Long> viewsOfEvents = AddAndGetViewsForEvents
+        Map<Event, Long> viewsOfEvents = new AddAndGetViewsForEvents(statsPath)
                 .getMapViewsOfEvents(compilation.getEvents());
         return CompilationMapper.toCompilationDto(
                 compilation, EventMapper.toEventShortDtoList(viewsOfEvents));
