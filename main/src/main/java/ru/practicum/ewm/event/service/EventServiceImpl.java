@@ -348,8 +348,8 @@ public class EventServiceImpl implements EventService {
         for (Map.Entry<Event, Long> entry : eventsWithCountConfirmed.entrySet()) {
             toStatisticService.add("/events/" + entry.getKey().getId());
         }
-        Map<Long, Long> viewsOfEventsId = addAndGetViewsImpl.
-                getViewsOfEventsId(toStatisticService.toString());
+        Map<Long, Long> viewsOfEventsId = addAndGetViewsImpl
+                .getViewsOfEventsId(toStatisticService.toString());
         Map<Event, ViewsAndCountConfirmed> viewsAndCountConfirmedOfEvents = new HashMap<>();
         for (Map.Entry<Event, Long> entryFromConfirmed : eventsWithCountConfirmed.entrySet()) {
             Long views = viewsOfEventsId.get(entryFromConfirmed.getKey().getId());
