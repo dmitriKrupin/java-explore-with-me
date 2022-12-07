@@ -3,6 +3,7 @@ package ru.practicum.ewm.comment.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.ewm.user.dto.UserShortDto;
+
 @Data
 @AllArgsConstructor
 public class CommentDtoOut {
