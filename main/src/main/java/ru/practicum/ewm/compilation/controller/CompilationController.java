@@ -23,7 +23,6 @@ public class CompilationController {
 
     @GetMapping
     public List<CompilationDto> getAllCompilations(
-            //?pinned=true&from=0&size=1000
             @RequestParam(required = false) Boolean pinned,
             @RequestParam(required = false, defaultValue = "0") Long from,
             @RequestParam(required = false, defaultValue = "10") Long size

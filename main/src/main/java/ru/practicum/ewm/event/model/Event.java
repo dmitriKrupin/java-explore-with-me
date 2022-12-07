@@ -33,8 +33,8 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "initiator_id")
     private User initiator;
-    @Column(name = "confirmed_requests")
-    private Long confirmedRequests;
+    //@Column(name = "confirmed_requests")
+    //private Long confirmedRequests;
     //Количество одобренных заявок на участие в данном событии
     private String description;
     @Column(name = "participant_limit")
@@ -56,7 +56,7 @@ public class Event {
     //Нужна ли пре-модерация заявок на участие
 
     public Event(String title, String annotation, Category category, Boolean paid,
-                 LocalDateTime eventDate, User initiator, Long confirmedRequests,
+                 LocalDateTime eventDate, User initiator, /*Long confirmedRequests,*/
                  String description, Long participantLimit, Status state,
                  LocalDateTime createdOn, LocalDateTime publishedOn, Location location,
                  Boolean requestModeration) {
@@ -66,7 +66,7 @@ public class Event {
         this.paid = paid;
         this.eventDate = eventDate;
         this.initiator = initiator;
-        this.confirmedRequests = confirmedRequests;
+        //this.confirmedRequests = confirmedRequests;
         this.description = description;
         this.participantLimit = participantLimit;
         this.state = state;

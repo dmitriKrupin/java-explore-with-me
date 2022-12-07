@@ -50,14 +50,15 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Такого события c id " + eventId + " нет"));
         Boolean existRequestFromUserAtEvent = requestRepository
-                .existsByRequesterIdAndEventId(eventId, userId);
+                .existsByRequesterIdAndEventId(userId, eventId);
         Request request = new Request(
                 event, user, LocalDateTime.now(), Status.PENDING);
         if (!existRequestFromUserAtEvent && event.getParticipantLimit() > 0) {
-            long requestLimit = event.getParticipantLimit() -
-                    //Ограничение на количество участников.
-                    // Значение 0 - означает отсутствие ограничения
-                    event.getConfirmedRequests();
+            Long confirmedRequest = requestRepository
+                    .countEventByStatus(eventId, Status.CONFIRMED);
+            long requestLimit = event.getParticipantLimit() - confirmedRequest;
+            //Ограничение на количество участников.
+            // Значение 0 - означает отсутствие ограничения
             //Количество одобренных заявок на участие в данном событии
             if (requestLimit == 0) {
                 // + если у события достигнут лимит запросов на участие необходимо вернуть ошибку
