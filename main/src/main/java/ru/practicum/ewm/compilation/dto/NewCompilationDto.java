@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class NewCompilationDto {
-    //Подборка событий
     @NotNull
     @NotBlank
     @NotEmpty

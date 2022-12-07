@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ApiError {
-    //Сведения об ошибке
     private List<String> errors;
     private String message;
     private String reason;

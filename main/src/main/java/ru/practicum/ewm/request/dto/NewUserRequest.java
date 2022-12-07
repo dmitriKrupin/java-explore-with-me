@@ -6,7 +6,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class NewUserRequest {
-    //Данные нового пользователя
     @NotNull
     @NotEmpty
     @NotBlank

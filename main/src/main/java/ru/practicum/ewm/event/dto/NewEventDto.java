@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class NewEventDto {
-    //Новое событие
     @NotNull
     @NotEmpty
     @NotBlank

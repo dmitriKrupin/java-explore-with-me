@@ -7,8 +7,6 @@ import ru.practicum.ewm.event.model.Location;
 @Data
 @AllArgsConstructor
 public class AdminUpdateEventRequest {
-    //Информация для редактирования события администратором.
-    // Все поля необязательные. Значение полей не валидируется.
     private String annotation;
     private Long category;
     private String description;

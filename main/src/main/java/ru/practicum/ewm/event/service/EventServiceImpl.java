@@ -13,6 +13,7 @@ import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Location;
 import ru.practicum.ewm.event.model.Status;
+import ru.practicum.ewm.event.model.ViewsAndCountConfirmed;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.event.repository.LocationRepository;
 import ru.practicum.ewm.exception.BadRequestException;
@@ -69,9 +70,8 @@ public class EventServiceImpl implements EventService {
                             text, categories, paid);
             eventsWithCountConfirmed = getEventsWithCountConfirmed(events);
             List<EventShortDto> viewsGroupEventShortDtoList = EventMapper
-                    .toEventShortDtoList(addAndGetViewsImpl
-                            .getViewsAndCountConfirmedOfEvents(
-                                    eventsWithCountConfirmed));
+                    .toEventShortDtoList(getViewsAndCountConfirmedOfEvents(
+                            eventsWithCountConfirmed));
             viewsGroupEventShortDtoList.sort(Comparator.comparing(EventShortDto::getViews));
             return viewsGroupEventShortDtoList;
         } else {
@@ -85,17 +85,16 @@ public class EventServiceImpl implements EventService {
             log.error(exception.getCause().getMessage());
         }
         eventsWithCountConfirmed = getEventsWithCountConfirmed(events);
-        return EventMapper.toEventShortDtoList(addAndGetViewsImpl
-                .getViewsAndCountConfirmedOfEvents(eventsWithCountConfirmed));
+        return EventMapper.toEventShortDtoList(
+                getViewsAndCountConfirmedOfEvents(eventsWithCountConfirmed));
     }
 
     private Map<Event, Long> getEventsWithCountConfirmed(List<Event> events) {
-        Long confirmedRequest;
         Map<Event, Long> eventsWithCountConfirmed = new HashMap<>();
-        for (Event entry : events) {
-            confirmedRequest = requestRepository
-                    .countEventByStatus(entry.getId(), Status.CONFIRMED);
-            eventsWithCountConfirmed.put(entry, confirmedRequest);
+        List<Long> confirmedList = requestRepository
+                .countByEventInAndStatusOrderByEvent(events, Status.CONFIRMED);
+        for (int i = 0; i < confirmedList.size(); i++) {
+            eventsWithCountConfirmed.put(events.get(i), confirmedList.get(i));
         }
         return eventsWithCountConfirmed;
     }
@@ -133,7 +132,7 @@ public class EventServiceImpl implements EventService {
         List<Event> eventsByUser = eventRepository.findAllByInitiator(user);
         Map<Event, Long> eventsWithCountConfirmed = getEventsWithCountConfirmed(eventsByUser);
         return EventMapper.toEventShortDtoList(
-                addAndGetViewsImpl.getViewsAndCountConfirmedOfEvents(eventsWithCountConfirmed));
+                getViewsAndCountConfirmedOfEvents(eventsWithCountConfirmed));
     }
 
     @Override
@@ -275,8 +274,8 @@ public class EventServiceImpl implements EventService {
                         users, statusList, categories, start, end);
         Map<Event, Long> eventsWithCountConfirmed
                 = getEventsWithCountConfirmed(events);
-        return EventMapper.toEventFullDtoList(addAndGetViewsImpl
-                .getViewsAndCountConfirmedOfEvents(eventsWithCountConfirmed));
+        return EventMapper.toEventFullDtoList(
+                getViewsAndCountConfirmedOfEvents(eventsWithCountConfirmed));
     }
 
     private List<Status> getStatusFromString(List<String> state) {
@@ -340,5 +339,28 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Такой категории c id " + event.getCategory() + " нет"));
         return EventMapper
                 .toEventFullDto(event, category, null, null);
+    }
+
+    @Override
+    public Map<Event, ViewsAndCountConfirmed> getViewsAndCountConfirmedOfEvents(
+            Map<Event, Long> eventsWithCountConfirmed) {
+        List<String> toStatisticService = new ArrayList<>();
+        for (Map.Entry<Event, Long> entry : eventsWithCountConfirmed.entrySet()) {
+            toStatisticService.add("/events/" + entry.getKey().getId());
+        }
+        Map<Long, Long> viewsOfEventsId = addAndGetViewsImpl.
+                getViewsOfEventsId(toStatisticService.toString());
+        Map<Event, ViewsAndCountConfirmed> viewsAndCountConfirmedOfEvents = new HashMap<>();
+        for (Map.Entry<Event, Long> entryFromConfirmed : eventsWithCountConfirmed.entrySet()) {
+            Long views = viewsOfEventsId.get(entryFromConfirmed.getKey().getId());
+            viewsAndCountConfirmedOfEvents.put(
+                    entryFromConfirmed.getKey(),
+                    new ViewsAndCountConfirmed(
+                            views,
+                            entryFromConfirmed.getValue()
+                    )
+            );
+        }
+        return viewsAndCountConfirmedOfEvents;
     }
 }

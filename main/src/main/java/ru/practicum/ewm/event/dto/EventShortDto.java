@@ -10,7 +10,6 @@ import ru.practicum.ewm.user.dto.UserShortDto;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class EventShortDto {
-    //Краткая информация о событии
     private String annotation;
     private CategoryDto category;
     private Long confirmedRequests;

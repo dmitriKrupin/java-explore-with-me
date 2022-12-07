@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class UpdateEventRequest {
-    //Данные для изменения информации о событии
     @NotNull
     @NotEmpty
     @NotBlank

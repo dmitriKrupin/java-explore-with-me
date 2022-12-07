@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class NewCategoryDto {
-    //Данные для добавления новой категории
     private Long id;
     @NotNull
     @NotBlank

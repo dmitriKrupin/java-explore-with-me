@@ -15,7 +15,7 @@ import java.util.List;
 @RestControllerAdvice
 public class ExceptionController {
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST) //400
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> badRequestException(final BadRequestException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -29,7 +29,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN) //403
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ApiError> forbiddenException(final ForbiddenException e) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
@@ -43,7 +43,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND) //404
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> notFoundException(final NotFoundException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -57,7 +57,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT) //409
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ApiError> conflictException(final ConflictException e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -71,7 +71,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ApiError> unsupportedException(final InternalServerErrorException e) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

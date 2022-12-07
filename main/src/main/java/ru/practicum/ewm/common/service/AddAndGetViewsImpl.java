@@ -6,11 +6,10 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.common.DataForStatistics;
-import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.model.ViewsAndCountConfirmed;
 import ru.practicum.ewm.request.dto.ViewStats;
 
 import java.io.IOException;
@@ -21,9 +20,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -31,6 +28,13 @@ import java.util.Map;
 public class AddAndGetViewsImpl implements AddAndGetViews {
     @Value("${stats-server.url}")
     private String statsPath;
+    private final ObjectMapper objectMapper;
+    private final HttpClient client = HttpClient.newHttpClient();
+
+    @Autowired
+    public AddAndGetViewsImpl(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void addHit(String uri, String ip) {
@@ -46,41 +50,12 @@ public class AddAndGetViewsImpl implements AddAndGetViews {
                 .uri(url)
                 .header("Content-Type", "application/json")
                 .build();
-        HttpClient client = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         try {
             HttpResponse<String> response = client.send(request, handler);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Map<Event, ViewsAndCountConfirmed> getViewsAndCountConfirmedOfEvents(
-            Map<Event, Long> eventsWithCountConfirmed) {
-        List<String> toStatisticService = new ArrayList<>();
-        for (Map.Entry<Event, Long> entry : eventsWithCountConfirmed.entrySet()) {
-            toStatisticService.add("/events/" + entry.getKey().getId());
-        }
-        Map<Long, Long> viewsOfEventsId =
-                getViewsOfEventsId(toStatisticService.toString());
-        Map<Event, ViewsAndCountConfirmed> viewsAndCountConfirmedOfEvents = new HashMap<>();
-        for (Map.Entry<Event, Long> entryFromConfirmed : eventsWithCountConfirmed.entrySet()) {
-            Long views = 0L;
-            for (Map.Entry<Long, Long> entryFromView : viewsOfEventsId.entrySet()) {
-                if (entryFromView.getKey().equals(entryFromConfirmed.getKey().getId())) {
-                    views = entryFromView.getValue();
-                }
-            }
-            viewsAndCountConfirmedOfEvents.put(
-                    entryFromConfirmed.getKey(),
-                    new ViewsAndCountConfirmed(
-                            views,
-                            entryFromConfirmed.getValue()
-                    )
-            );
-        }
-        return viewsAndCountConfirmedOfEvents;
     }
 
     @Override
@@ -101,7 +76,6 @@ public class AddAndGetViewsImpl implements AddAndGetViews {
                 .uri(uri)
                 .header("Accept", "application/json")
                 .build();
-        HttpClient client = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = null;
         try {
@@ -109,7 +83,6 @@ public class AddAndGetViewsImpl implements AddAndGetViews {
         } catch (IOException | InterruptedException exception) {
             log.error(exception.getCause().getMessage());
         }
-        ObjectMapper objectMapper = new ObjectMapper();
         assert response != null;
         String answer = response.body();
         objectMapper.configure(DeserializationFeature
@@ -145,7 +118,6 @@ public class AddAndGetViewsImpl implements AddAndGetViews {
                 .uri(uri)
                 .header("Accept", "application/json")
                 .build();
-        HttpClient client = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = null;
         try {
@@ -153,7 +125,6 @@ public class AddAndGetViewsImpl implements AddAndGetViews {
         } catch (IOException | InterruptedException exception) {
             log.error(exception.getCause().getMessage());
         }
-        ObjectMapper objectMapper = new ObjectMapper();
         assert response != null;
         String answer = response.body();
         objectMapper.configure(DeserializationFeature

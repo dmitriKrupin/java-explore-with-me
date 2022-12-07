@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ViewsAndCountConfirmed {
-    Long views;
-    Long confirmedRequests;
+    private Long views;
+    private Long confirmedRequests;
 }

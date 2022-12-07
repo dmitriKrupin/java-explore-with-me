@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class CompilationDto {
-    //Подборка событий
     private List<EventShortDto> events;
     private Long id;
     private Boolean pinned;
