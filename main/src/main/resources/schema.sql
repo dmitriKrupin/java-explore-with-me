@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS comments
     event_id           BIGINT,
     author_id          BIGINT,
     created            TIMESTAMP WITHOUT TIME ZONE,
+    status             BIGINT,
     comment_moderation BOOLEAN,
     published          TIMESTAMP WITHOUT TIME ZONE,
     edited             TIMESTAMP WITHOUT TIME ZONE
