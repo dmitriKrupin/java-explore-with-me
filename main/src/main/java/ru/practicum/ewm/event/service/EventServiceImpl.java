@@ -341,8 +341,7 @@ public class EventServiceImpl implements EventService {
                 .toEventFullDto(event, category, null, null);
     }
 
-    @Override
-    public Map<Event, ViewsAndCountConfirmed> getViewsAndCountConfirmedOfEvents(
+    private Map<Event, ViewsAndCountConfirmed> getViewsAndCountConfirmedOfEvents(
             Map<Event, Long> eventsWithCountConfirmed) {
         List<String> toStatisticService = new ArrayList<>();
         for (Map.Entry<Event, Long> entry : eventsWithCountConfirmed.entrySet()) {
