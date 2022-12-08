@@ -26,14 +26,14 @@ public class AdminCommentController {
     @PatchMapping("/{commentId}/publish")
     public CommentDtoOut publishedComment(
             @Valid @Positive @PathVariable Long commentId) {
-        log.info("Получаем PATCH запрос к эндпойнту /comment/{}/publish", commentId);
+        log.info("Получаем PATCH запрос к эндпойнту /admin/comments/{}/publish", commentId);
         return commentService.publishedComment(commentId);
     }
 
     @PatchMapping("/{commentId}/reject")
     public CommentDtoOut rejectedComment(
             @Valid @Positive @PathVariable Long commentId) {
-        log.info("Получаем PATCH запрос к эндпойнту /comment/{}/reject", commentId);
+        log.info("Получаем PATCH запрос к эндпойнту /admin/comments/{}/reject", commentId);
         return commentService.rejectedComment(commentId);
     }
 

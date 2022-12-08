@@ -11,5 +11,8 @@ public class CommentDtoOut {
     private Long id;
     private UserShortDto author;
     private String text;
+    private String status;
     private String created;
+    private String edited;
+    private String published;
 }

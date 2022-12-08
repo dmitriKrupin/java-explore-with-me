@@ -16,9 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users/{userId}/comments")
 public class PrivateCommentController {
-    //Авторизованные пользователи должны иметь возможность добавлять в приложение
-    // новые комментарии, редактировать, удалять и просматривать после добавления.
-
     private final CommentService commentService;
 
     @Autowired
@@ -31,7 +28,7 @@ public class PrivateCommentController {
             @Valid @Positive @PathVariable Long eventId,
             @Valid @Positive @PathVariable Long userId,
             @RequestBody NewCommentDto newCommentDto) {
-        log.info("Получаем POST запрос к эндпойнту /users/{}/comments/event/{}/user",
+        log.info("Получаем POST запрос к эндпойнту /users/{}/comments/event/{}",
                 userId, eventId);
         return commentService.addComment(newCommentDto, userId, eventId);
     }

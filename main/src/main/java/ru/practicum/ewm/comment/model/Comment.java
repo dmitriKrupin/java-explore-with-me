@@ -1,6 +1,8 @@
 package ru.practicum.ewm.comment.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Status;
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "comments", schema = "public")
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class Comment {
     @Id
     @Column(name = "id")
@@ -30,21 +34,17 @@ public class Comment {
     private LocalDateTime created;
     @Column(name = "status")
     private Status status;
-    @Column(name = "comment_moderation")
-    private Boolean commentModeration;
     @Column(name = "published")
     private LocalDateTime published;
     @Column(name = "edited")
     private LocalDateTime edited;
 
     public Comment(String text, Event event, User author, LocalDateTime created,
-                   Boolean commentModeration, LocalDateTime published,
-                   LocalDateTime edited) {
+                   LocalDateTime published, LocalDateTime edited) {
         this.text = text;
         this.event = event;
         this.author = author;
         this.created = created;
-        this.commentModeration = commentModeration;
         this.published = published;
         this.edited = edited;
     }

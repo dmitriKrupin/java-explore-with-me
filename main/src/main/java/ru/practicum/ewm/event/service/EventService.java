@@ -3,9 +3,7 @@ package ru.practicum.ewm.event.service;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
-import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.Location;
-import ru.practicum.ewm.event.model.ViewsAndCountConfirmed;
 import ru.practicum.ewm.request.dto.AdminUpdateEventRequest;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 import ru.practicum.ewm.request.dto.UpdateEventRequest;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 
 public interface EventService {
     List<EventShortDto> getAllEvents(
@@ -52,7 +49,4 @@ public interface EventService {
     EventFullDto publishedEvent(Long eventId);
 
     EventFullDto rejectedEvent(Long eventId);
-
-    Map<Event, ViewsAndCountConfirmed> getViewsAndCountConfirmedOfEvents(
-            Map<Event, Long> eventsWithCountConfirmed);
 }

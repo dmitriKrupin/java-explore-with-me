@@ -17,12 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/comments")
 public class CommentController {
-    //todo: Комментирование:
-    // Может ли пользователь, оставивший комментарий, отредактировать его позже?
-    // Возможность оставлять комментарии к событиям и модерировать их.
-
-    //Возможность получения всех имеющихся комментариев события
-
     private final CommentService commentService;
 
     @Autowired

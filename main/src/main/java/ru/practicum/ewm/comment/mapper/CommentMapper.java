@@ -21,7 +21,6 @@ public class CommentMapper {
                 user,
                 LocalDateTime.parse(newCommentDto.getCreated(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                newCommentDto.getCommentModeration(),
                 null,
                 null);
     }
@@ -33,7 +32,41 @@ public class CommentMapper {
                 comment.getId(),
                 UserMapper.toUserShortDto(user),
                 comment.getText(),
+                comment.getStatus().toString(),
                 comment.getCreated().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
+                null,
+                null);
+    }
+
+    public static CommentDtoOut toUpdatedCommentDtoOut(
+            Comment comment, Event event, User user) {
+        return new CommentDtoOut(
+                event.getTitle(),
+                comment.getId(),
+                UserMapper.toUserShortDto(user),
+                comment.getText(),
+                comment.getStatus().toString(),
+                comment.getCreated().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
+                comment.getEdited().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
+                null);
+    }
+
+    public static CommentDtoOut toPublishedCommentDtoOut(
+            Comment comment, Event event, User user) {
+        return new CommentDtoOut(
+                event.getTitle(),
+                comment.getId(),
+                UserMapper.toUserShortDto(user),
+                comment.getText(),
+                comment.getStatus().toString(),
+                comment.getCreated().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
+                comment.getEdited().format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss")),
+                comment.getPublished().format(DateTimeFormatter
                         .ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
@@ -41,6 +74,15 @@ public class CommentMapper {
         List<CommentDtoOut> commentDtoOutList = new ArrayList<>();
         for (Comment entry : comments) {
             commentDtoOutList.add(CommentMapper.toCommentDtoOut(
+                    entry, entry.getEvent(), entry.getAuthor()));
+        }
+        return commentDtoOutList;
+    }
+
+    public static List<CommentDtoOut> toPublishedCommentDtoOutList(List<Comment> comments) {
+        List<CommentDtoOut> commentDtoOutList = new ArrayList<>();
+        for (Comment entry : comments) {
+            commentDtoOutList.add(CommentMapper.toPublishedCommentDtoOut(
                     entry, entry.getEvent(), entry.getAuthor()));
         }
         return commentDtoOutList;
