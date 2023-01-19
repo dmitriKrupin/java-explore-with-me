@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS comments
     author_id          BIGINT,
     created            TIMESTAMP WITHOUT TIME ZONE,
     status             BIGINT,
-    comment_moderation BOOLEAN,
     published          TIMESTAMP WITHOUT TIME ZONE,
     edited             TIMESTAMP WITHOUT TIME ZONE
 );
